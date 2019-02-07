@@ -8,5 +8,10 @@
   "author": "",
   "license": "ISC",
   "homepage": "",
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "buffer": "^5.2.1",
+    "choo": "^6.13.1",
+    "ipfs": "^0.34.4"
+  }
 }
