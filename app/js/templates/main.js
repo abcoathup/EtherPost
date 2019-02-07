@@ -15,8 +15,8 @@ export const main = function (state, emit) {
     <div>
         <h2>Ether Post</h2>
         <form onsubmit="${upload}" method="post">
-            <label for="file">Upload:</label><br>
-            <input type="file" id="file" name="file" accept="image/gif, image/jpeg, image/png">
+            <label for="picture">Upload:</label><br>
+            <input type="file" id="picture" name="picture" accept="image/gif, image/jpeg, image/png">
             <input type="submit" value="Add">
         </form>
         <br />
@@ -25,8 +25,8 @@ export const main = function (state, emit) {
 
     function upload(e) {
         e.preventDefault()
-        var file = document.getElementById('file').files[0];
-        console.log(file)
-        emit('upload', file)
+        var picture = document.getElementById('picture').files[0];
+        console.log(picture)
+        emit('upload', picture)
     }
 }
