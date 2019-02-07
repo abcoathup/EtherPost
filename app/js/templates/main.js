@@ -6,14 +6,21 @@ var html = require('choo/html')
 
 // export module
 export const main = function (state, emit) {
+    let image
+    if (state.ipfsUrl) {
+        image = html `<a href="${state.ipfsUrl}"><img src="${state.ipfsUrl}" /></a>`
+    }
+
     return html `
     <div>
-        <h1>Ether Post</h1>
+        <h2>Ether Post</h2>
         <form onsubmit="${upload}" method="post">
             <label for="file">Upload:</label><br>
             <input type="file" id="file" name="file">
             <input type="submit" value="Add">
         </form>
+        <br />
+        ${image}
     </div>`
 
     function upload(e) {

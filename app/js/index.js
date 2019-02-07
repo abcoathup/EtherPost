@@ -30,7 +30,9 @@ app.use(function (state, emitter) {
                     console.error(err)
                     return
                 }
-                console.log(result[0].hash)
+                state.ipfsUrl = `https://ipfs.io/ipfs/${result[0].hash}`
+                console.log(state.ipfsUrl)
+                emitter.emit('render')
             })
         }
 
