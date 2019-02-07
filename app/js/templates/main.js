@@ -16,7 +16,7 @@ export const main = function (state, emit) {
         <h2>Ether Post</h2>
         <form onsubmit="${upload}" method="post">
             <label for="file">Upload:</label><br>
-            <input type="file" id="file" name="file">
+            <input type="file" id="file" name="file" accept="image/gif, image/jpeg, image/png">
             <input type="submit" value="Add">
         </form>
         <br />
