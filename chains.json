@@ -102,5 +102,29 @@
         "address": "0xd4add0cc99C65FCB94AF2cc7276ACdBF868B4F19"
       }
     }
+  },
+  "0xf51ea097428c5a271da30d17ac78d12fdc5ab5284a5b8cb48b578cf2e621cfaa": {
+    "contracts": {
+      "0xe7c44fa4fccc7018fd54039487f9345ef2374d6bcaafdc22fae39f1b366458fd": {
+        "name": "EtherPost",
+        "address": "0xdbBabD4A8f6680c6Fc86de979E15C271d114d34c"
+      }
+    }
+  },
+  "0xd4857b7e39a19cdb5a714a02b9c47d39b52c7935154e914c5d89fe2f41672609": {
+    "contracts": {
+      "0xe7c44fa4fccc7018fd54039487f9345ef2374d6bcaafdc22fae39f1b366458fd": {
+        "name": "EtherPost",
+        "address": "0x17213ae7FDAd09069aA00B16b821AD84eBe7469B"
+      }
+    }
+  },
+  "0xc0223297623d6ff1097bf65dd2becfcefb2f642407009b92ed2bd15931cb93f7": {
+    "contracts": {
+      "0xe7c44fa4fccc7018fd54039487f9345ef2374d6bcaafdc22fae39f1b366458fd": {
+        "name": "EtherPost",
+        "address": "0x18C94bb53669558C23F868e5CD6F85c989f6a25A"
+      }
+    }
   }
 }
