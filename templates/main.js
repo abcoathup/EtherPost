@@ -5,7 +5,7 @@ var html = require('choo/html')
 //has an upload form that allows uploading a file to IPFS
 
 // export module
-export const main = function (state, emit) {
+module.exports = function (state, emit) {
     let image
     if (state.ipfsUrl) {
         image = html `<a href="${state.ipfsUrl}"><img src="${state.ipfsUrl}" /></a>`

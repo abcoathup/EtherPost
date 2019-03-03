@@ -1,14 +1,16 @@
-import EmbarkJS from 'Embark/EmbarkJS';
+//import EmbarkJS from 'Embark/EmbarkJS';
 
 // import your contracts
-// e.g if you have a contract named SimpleStorage:
-//import SimpleStorage from 'Embark/contracts/SimpleStorage';
+//import EtherPost from 'Embark/contracts/EtherPost';
+
+// import web3
+//var Web3 = require('web3')
 
 // import choo
 var choo = require('choo')
 
 // import template
-import { main } from "./templates/main";
+var main = require('./templates/main');
 
 // initialize choo
 var app = choo()
