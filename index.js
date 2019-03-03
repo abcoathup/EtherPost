@@ -19,8 +19,8 @@ var app = choo()
 var buffer = require('buffer')
 
 // Initialize IPFS
-var IPFS = require('ipfs')
-var node = new IPFS()
+var IPFS = require('ipfs-http-client')
+var node = new IPFS('ipfs.infura.io', '5001', {protocol: 'https'})
 
 app.use(function (state, emitter) {
     emitter.on('upload', function (file) {
