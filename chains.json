@@ -214,5 +214,13 @@
         "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
       }
     }
+  },
+  "0x343a10fc854299b0f0cd5661c4ae65f923c634a7d5b4cbcf37c476470cc63715": {
+    "contracts": {
+      "0xb36cb4feb9f5559649bbcdfe0b139e897c8dec4b95381039edbc696fa86810c7": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      }
+    }
   }
 }
