@@ -34,12 +34,28 @@ app.use(function (state, emitter) {
         }
 
         // Set up web3 provider
-        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8555"))
+        web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
 
         // Set up contract interface
         state.contractInstance = new web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
         await getPosts(state);
         emitter.emit('render')
+
+        state.contractInstance.events.LogUpload((err, event) => {
+            if (err) {
+              // something went wrong
+              console.log(err);
+            } 
+            const uploader = event.returnValues.uploader;
+            var ipfsHash = getIpfsHashFromBytes32(event.returnValues.ipfsHash);
+            var ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
+    
+            console.log('LogUpload event: ', ipfsHash);
+
+            var post = { ipfsUrl: ipfsUrl };
+            state.posts.push(post);
+            emitter.emit('render')
+        })
 
         // Unlock account
         const accounts = await web3.eth.getAccounts()
@@ -65,15 +81,15 @@ app.use(function (state, emitter) {
                 var ipfsHash = result[0].hash;
                 var ipfsUrl = `https://ipfs.io/ipfs/${result[0].hash}`
 
-                var post = { ipfsUrl: ipfsUrl };
-                state.posts.push(post);            
-
-                emitter.emit('render')
+                //TODO: for improved user experience, assume save to contract successful
+                //var post = { ipfsUrl: ipfsUrl };
+                //state.posts.push(post);            
+                //emitter.emit('render')
 
                 state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
-                    console.log("Saved to smart contract", ipfsHash)
+                    console.log("Saved post to smart contract: ", ipfsHash)
                 })
             })
         }
