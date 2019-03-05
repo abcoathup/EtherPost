@@ -28,7 +28,7 @@ contract EtherPost is EtherPostInterface {
   }
 
   function comment(bytes32 imageHash, bytes32 commentHash) public {
-    uint timestamp = 0;
+    uint timestamp = block.timestamp;
     comments[imageHash].push(commentHash);
 
     emit LogComment(msg.sender, imageHash, commentHash, timestamp);
