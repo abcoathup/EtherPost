@@ -654,5 +654,17 @@
         "address": "0xDbd02a920FE167Ae8eD663f512236ddbF9416C15"
       }
     }
+  },
+  "0x5be083b21770cc96db9cbcb2be269bc5689947f93055f837ccdd886c9993ae95": {
+    "contracts": {
+      "0x0bdcec5686a1c5c1055eb8fc0137d9987d4f3e67e466610b70021fa9632ac1b8": {
+        "name": "EtherPost",
+        "address": "0xF46ac9ae22a7f06BdCf0588943e6077B1f62632b"
+      },
+      "0x1cc36d3933529a208247f1f38d63fbd263ef73240ceae2ca96c131a466767387": {
+        "name": "Identity",
+        "address": "0xF00B749DbBdc2Af5aF61659D1e651748C791D7e4"
+      }
+    }
   }
 }

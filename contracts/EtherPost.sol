@@ -3,18 +3,18 @@ pragma solidity 0.4.24;
 import "./EtherPostInterface.sol";
 
 contract EtherPost is EtherPostInterface {
-  mapping(address => bytes32[]) private posts;
+  mapping(address => bytes32[]) private uploads;
   mapping(bytes32 => bytes32[]) private comments;
   mapping(bytes32 => uint) private claps;
 
   function upload(bytes32 ipfsHash) public {
-    posts[msg.sender].push(ipfsHash);
+    uploads[msg.sender].push(ipfsHash);
 
     emit LogUpload(msg.sender, ipfsHash);
   }
 
   function getUploads(address uploader) public returns(bytes32[] memory) {
-    return posts[uploader];
+    return uploads[uploader];
   }
 
   function clap(bytes32 ipfsHash) public {
