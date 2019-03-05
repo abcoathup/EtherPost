@@ -2,6 +2,12 @@ const EtherPost = require('Embark/contracts/EtherPost');
 const bs58 = require('bs58');
 
 let accounts;
+let etherPostInstance;
+const testHash1 = 'QmcniBv7UQ4gGPQQW2BwbD4ZZHzN3o3tPuNLZCbBchd1zh';
+const testHash2 = 'QmSFQ7KxjCVTNps823VmVu8jkwXdwDA7TJ8UxF5bZxZ4St';
+const testHash3 = 'Qma6e8dovfLyiG2UUfdkSHNPAySzrWLX9qVXb44v1muqcp';
+const testHash4 = 'QmbVkMHyKXehsAG6Mq8zj1ULZi3vYQf3YWprh5kwdTRZXc';
+const testHash5 = 'QmcDdvUupWv4gPmHYoibEegFtVJTA5gXYpEcDmgeJQHZLB';
 
 // For documentation please see https://embark.status.im/docs/contracts_testing.html
 config({
@@ -23,54 +29,61 @@ config({
 contract("EtherPost", function () {
   this.timeout(0);
 
-  it('New address has zero posts', async () => {
-    let uploads = await EtherPost.methods.getUploads(accounts[0]).call()
-    // console.log('upload as bytes', uploads[0])
-    // console.log('upload', getIpfsHashFromBytes32(uploads[0]))
-  
+  beforeEach(async function() {
+    etherPostInstance = await EtherPost.deploy().send();
+  });
+
+  it('should have zero posts for new address', async () => {
+    let uploads = await etherPostInstance.methods.getUploads(accounts[0]).call();
     assert.equal(uploads.length, 0);
   });
 
-  it('Lets us store a post', async () => {
-    let testHash = 'QmSFQ7KxjCVTNps823VmVu8jkwXdwDA7TJ8UxF5bZxZ4St'
-    // ATT: We slice off the first two bytes because they represent the hashing algorithm,
-    // which we assume to be static here and now so we can store the hash in a bytes32.
-    await EtherPost.methods.upload(getBytes32FromIpfsHash(testHash)).send();
-    let uploads = await EtherPost.methods.getUploads(accounts[0]).call()
-    // console.log('upload as bytes', uploads[0])
-    // console.log('upload', getIpfsHashFromBytes32(uploads[0]))
-  
-    assert.equal(uploads.length, 1)
-    assert.equal(getIpfsHashFromBytes32(uploads[0]), testHash)
+  it('should upload a post', async () => {
+    const txResult = await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
+    const event = txResult.events.LogUpload;
+    const uploader = event.returnValues.uploader;
+    const ipfsHash = event.returnValues.ipfsHash;
+    assert.equal(uploader, accounts[0]);
+    assert.equal(getIpfsHashFromBytes32(ipfsHash), testHash1);
+
+    let uploads = await etherPostInstance.methods.getUploads(accounts[0]).call();
+    assert.equal(uploads.length, 1);
+    assert.equal(getIpfsHashFromBytes32(uploads[0]), testHash1);
   });
 
-  it('Lets us store a post for account 1', async () => {
-    let testHash = 'QmSFQ7KxjCVTNps823VmVu8jkwXdwDA7TJ8UxF5bZxZ4St'
-    // ATT: We slice off the first two bytes because they represent the hashing algorithm,
-    // which we assume to be static here and now so we can store the hash in a bytes32.
-    await EtherPost.methods.upload(getBytes32FromIpfsHash(testHash)).send({from: accounts[1]});
-    let uploads = await EtherPost.methods.getUploads(accounts[1]).call()
-    // console.log('upload as bytes', uploads[0])
-    // console.log('upload', getIpfsHashFromBytes32(uploads[0]))
-  
-    assert.equal(uploads.length, 1)
-    assert.equal(getIpfsHashFromBytes32(uploads[0]), testHash)
-  });
+  it('should upload a post for multiple accounts', async () => {
+    // Two uploads for account 0
+    await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]});
+    await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash2)).send({from: accounts[0]});
+        
+    // Three uploads for account 1
+    await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash3)).send({from: accounts[1]});
+    await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash4)).send({from: accounts[1]});
+    await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash5)).send({from: accounts[1]});
+    
+    let uploads = await etherPostInstance.methods.getUploads(accounts[0]).call();
+    assert.equal(uploads.length, 2);
+    assert.equal(getIpfsHashFromBytes32(uploads[0]), testHash1);
+    assert.equal(getIpfsHashFromBytes32(uploads[1]), testHash2);
 
-  it('Lets us store multiple posts', async () => {
-    let testHash = 'QmSFQ7KxjCVTNps823VmVu8jkwXdwDA7TJ8UxF5bZxZ4St'
-    // ATT: We slice off the first two bytes because they represent the hashing algorithm,
-    // which we assume to be static here and now so we can store the hash in a bytes32.
-    await EtherPost.methods.upload(getBytes32FromIpfsHash(testHash)).send();
-    await EtherPost.methods.upload(getBytes32FromIpfsHash(testHash)).send();
-    let uploads = await EtherPost.methods.getUploads(accounts[0]).call()
-    // console.log('upload as bytes', uploads[0])
-    // console.log('upload', getIpfsHashFromBytes32(uploads[0]))
-  
+    uploads = await etherPostInstance.methods.getUploads(accounts[1]).call();
     assert.equal(uploads.length, 3);
-    assert.equal(getIpfsHashFromBytes32(uploads[0]), testHash);
-    assert.equal(getIpfsHashFromBytes32(uploads[1]), testHash);
-    assert.equal(getIpfsHashFromBytes32(uploads[2]), testHash);
+    assert.equal(getIpfsHashFromBytes32(uploads[0]), testHash3);
+    assert.equal(getIpfsHashFromBytes32(uploads[1]), testHash4);
+    assert.equal(getIpfsHashFromBytes32(uploads[2]), testHash5);
+  });
+
+  it('should upload multiple posts', async () => {
+    let posts = 10;
+    for (var post = 0; post < posts; post++) {
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
+    }
+    let uploads = await etherPostInstance.methods.getUploads(accounts[0]).call()
+    assert.equal(uploads.length, posts);
+
+    for (var post = 0; post < posts; post++) {
+      assert.equal(getIpfsHashFromBytes32(uploads[post]), testHash1);
+    }
   });
 });
 
