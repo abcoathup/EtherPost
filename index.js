@@ -20,6 +20,8 @@ var node = new IPFS('ipfs.infura.io', '5001', {protocol: 'https'})
 
 app.use(function (state, emitter) {
 
+    state.posts = [];
+
     emitter.on('DOMContentLoaded', async () => {
         // Check for web3 instance. Create if necessary.
         // Access MetaMask
@@ -36,7 +38,9 @@ app.use(function (state, emitter) {
 
         // Set up contract interface
         state.contractInstance = new web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
-    
+        await getPosts(state);
+        emitter.emit('render')
+
         // Unlock account
         const accounts = await web3.eth.getAccounts()
         web3.eth.personal.unlockAccount(accounts[0], async function (error, result) {
@@ -59,15 +63,17 @@ app.use(function (state, emitter) {
                     return
                 }
                 var ipfsHash = result[0].hash;
+                var ipfsUrl = `https://ipfs.io/ipfs/${result[0].hash}`
 
-                state.ipfsUrl = `https://ipfs.io/ipfs/${result[0].hash}`
-                console.log(state.ipfsUrl)
+                var post = { ipfsUrl: ipfsUrl };
+                state.posts.push(post);            
+
                 emitter.emit('render')
 
                 state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
-                    console.log("Saved to smart contract", receipt)
+                    console.log("Saved to smart contract", ipfsHash)
                 })
             })
         }
@@ -95,4 +101,24 @@ function getIpfsHashFromBytes32(bytes32Hex) {
   const hashBytes = Buffer.from(hex, 'hex');
   const str = bs58.encode(hashBytes)
   return str
+}
+
+function getPostsForUser(state, user) {
+    return new Promise(function (resolve, reject) {
+        state.contractInstance.methods.getUploads(user).call().then(function (response) {
+            resolve(response);
+        });
+    });
+}
+
+async function getPosts(state) {
+    const accounts = await web3.eth.getAccounts();
+    var posts = await getPostsForUser(state, accounts[0]);
+    posts.forEach(function(item, index) {
+        var ipfsHash = getIpfsHashFromBytes32(item);
+        var ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
+
+        var post = { ipfsUrl: ipfsUrl };
+        state.posts.push(post);            
+    });
 }
