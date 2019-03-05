@@ -7,6 +7,8 @@ contract EtherPost is EtherPostInterface {
 
   function upload(bytes32 ipfsHash) public {
     posts[msg.sender].push(ipfsHash);
+
+    emit LogUpload(msg.sender, ipfsHash);
   }
 
   function getUploads(address uploader) public returns(bytes32[] memory) {
