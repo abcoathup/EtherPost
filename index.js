@@ -51,7 +51,7 @@ app.use(function (state, emitter) {
             
             console.log('LogUpload event: ', ipfsHash);
 
-            var upload = { ipfsHash: ipfsHash };
+            var upload = { ipfsHash: ipfsHash, clapCount: 23, comments: [] };
             state.uploads.push(upload);
             emitter.emit('render')
         })
@@ -134,7 +134,7 @@ async function getUploads(state) {
     uploads.forEach(function(item, index) {
         var ipfsHash = getIpfsHashFromBytes32(item);
 
-        var upload = { ipfsHash: ipfsHash };
+        var upload = { ipfsHash: ipfsHash, clapCount: 23, comments: [] };
         state.uploads.push(upload);            
     });
 }
