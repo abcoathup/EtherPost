@@ -17,9 +17,7 @@ module.exports = function (state, emit) {
             <input type="submit" value="Add">
         </form>
         <br />
-        ${ // use reverse to display newest first
-            state.uploads.reverse().map(uploadTemplate)
-        }
+        ${state.uploads.map(uploadTemplate)}
     </div>`
 
     function upload(e) {

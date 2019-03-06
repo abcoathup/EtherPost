@@ -48,11 +48,10 @@ app.use(function (state, emitter) {
             } 
             const uploader = event.returnValues.uploader;
             var ipfsHash = getIpfsHashFromBytes32(event.returnValues.ipfsHash);
-            var ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
-    
+            
             console.log('LogUpload event: ', ipfsHash);
 
-            var upload = { ipfsUrl: ipfsUrl };
+            var upload = { ipfsHash: ipfsHash };
             state.uploads.push(upload);
             emitter.emit('render')
         })
@@ -79,13 +78,7 @@ app.use(function (state, emitter) {
                     return
                 }
                 var ipfsHash = result[0].hash;
-                var ipfsUrl = `https://ipfs.io/ipfs/${result[0].hash}`
-
-                //TODO: for improved user experience, assume save to contract successful
-                //var post = { ipfsUrl: ipfsUrl };
-                //state.posts.push(post);            
-                //emitter.emit('render')
-
+                
                 state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
@@ -119,6 +112,14 @@ function getIpfsHashFromBytes32(bytes32Hex) {
   return str
 }
 
+function getClapCount(state, ipfsHash) {
+    return new Promise(function (resolve, reject) {
+        state.contractInstance.methods.getClapCount(ipfsHash).call().then(function (response) {
+            resolve(response);
+        });
+    });
+}
+
 function getUploadsForUser(state, user) {
     return new Promise(function (resolve, reject) {
         state.contractInstance.methods.getUploads(user).call().then(function (response) {
@@ -132,9 +133,8 @@ async function getUploads(state) {
     var uploads = await getUploadsForUser(state, accounts[0]);
     uploads.forEach(function(item, index) {
         var ipfsHash = getIpfsHashFromBytes32(item);
-        var ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
 
-        var upload = { ipfsUrl: ipfsUrl };
+        var upload = { ipfsHash: ipfsHash };
         state.uploads.push(upload);            
     });
 }

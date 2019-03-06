@@ -1,13 +1,14 @@
 var html = require('choo/html')
 
-module.exports = function (post) {
-  var ipfsUrl = post.ipfsUrl;
+module.exports = function (upload) {
+  var ipfsHash = upload.ipfsHash;
+  var ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
 
   // create html template
   return html`
   <div>
     <div>
-      <img src="${post.ipfsUrl}" />
+      <img src="${ipfsUrl}" />
     </div>
   </div>
 
