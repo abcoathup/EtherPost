@@ -51,7 +51,7 @@ app.use(function (state, emitter) {
             
             console.log('LogUpload event: ', ipfsHash);
 
-            var upload = { ipfsHash: ipfsHash, clapCount: 23, comments: [] };
+            var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
             state.uploads.push(upload);
             emitter.emit('render')
         })
@@ -69,6 +69,7 @@ app.use(function (state, emitter) {
     })
 
     emitter.on('upload', function (file) {
+        console.log('Upload file: ', file)
         const reader = new FileReader();
         reader.onloadend = function () {
             const buf = buffer.Buffer(reader.result)
@@ -88,6 +89,14 @@ app.use(function (state, emitter) {
         }
 
         reader.readAsArrayBuffer(file)
+    })
+
+    emitter.on('clap', function (ipfsHash) {
+        state.contractInstance.methods.clap(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
+            .on('error', console.error)
+            .on('receipt', async receipt => {
+                console.log("Saved clap to smart contract: ", ipfsHash)
+            })
     })
 })
 
@@ -114,7 +123,7 @@ function getIpfsHashFromBytes32(bytes32Hex) {
 
 function getClapCount(state, ipfsHash) {
     return new Promise(function (resolve, reject) {
-        state.contractInstance.methods.getClapCount(ipfsHash).call().then(function (response) {
+        state.contractInstance.methods.getClapCount(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
             resolve(response);
         });
     });
@@ -131,10 +140,11 @@ function getUploadsForUser(state, user) {
 async function getUploads(state) {
     const accounts = await web3.eth.getAccounts();
     var uploads = await getUploadsForUser(state, accounts[0]);
+    
     uploads.forEach(function(item, index) {
         var ipfsHash = getIpfsHashFromBytes32(item);
-
-        var upload = { ipfsHash: ipfsHash, clapCount: 23, comments: [] };
+        
+        var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
         state.uploads.push(upload);            
     });
 }

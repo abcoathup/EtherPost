@@ -1,6 +1,6 @@
 var html = require('choo/html')
 
-module.exports = function (upload) {
+module.exports = function (upload, clap) {
   var ipfsHash = upload.ipfsHash;
   var comments = upload.comments;
   var commentCount = comments.length;
@@ -13,8 +13,8 @@ module.exports = function (upload) {
     <div>
       <img src="${ipfsUrl}" />
     </div>
-    <div>${clapCount}</div>
-    <div>${commentCount}</div>
+    <div><span id="${ipfsHash}" onclick="${clap}">Clap</span>${clapCount}</div>
+    <div><span>Comment</span>${commentCount}</div>
   </div>
 
   `

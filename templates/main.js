@@ -11,18 +11,28 @@ module.exports = function (state, emit) {
     return html `
     <div>
         <h2>Ether Post</h2>
-        <form onsubmit="${upload}" method="post">
+        <form onsubmit="${onUpload}" method="post">
             <label for="picture">Upload:</label><br>
             <input type="file" id="picture" name="picture" accept="image/gif, image/jpeg, image/png">
             <input type="submit" value="Add">
         </form>
         <br />
-        ${state.uploads.map(uploadTemplate)}
+        ${state.uploads.map(upload)}
     </div>`
 
-    function upload(e) {
+    function onUpload(e) {
         e.preventDefault()
         var picture = document.getElementById('picture').files[0];
         emit('upload', picture)
+    }
+
+    function onClap(e) {
+        e.preventDefault()
+        var ipfsHash = e.target.id;
+        emit('clap', ipfsHash)
+    }
+
+    function upload(upload, i) {
+        return uploadTemplate(upload, onClap)
     }
 }
