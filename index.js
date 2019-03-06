@@ -70,6 +70,21 @@ app.use(function (state, emitter) {
             emitter.emit('render')
         })
 
+        state.contractInstance.events.LogComment(async (err, event) => {
+            if (err) {
+              // something went wrong
+              console.log(err);
+            } 
+
+            const commenter = event.returnValues.commenter;
+            var imageHash = getIpfsHashFromBytes32(event.returnValues.imageHash);
+            var commentHash = getIpfsHashFromBytes32(event.returnValues.commentHash);
+            const timestamp = event.returnValues.timestamp;
+            await updateStateComments(state, imageHash);
+            
+            emitter.emit('render')
+        })
+
         // Unlock account
         const accounts = await web3.eth.getAccounts()
         web3.eth.personal.unlockAccount(accounts[0], async function (error, result) {
@@ -163,6 +178,15 @@ function getClapCount(state, ipfsHash) {
     });
 }
 
+function getComments(state, ipfsHash) {
+    return new Promise(function (resolve, reject) {
+        state.contractInstance.methods.getComments(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
+            resolve(response);
+        });
+    });
+}
+
+
 function getUploadsForUser(state, user) {
     return new Promise(function (resolve, reject) {
         state.contractInstance.methods.getUploads(user).call().then(function (response) {
@@ -192,11 +216,41 @@ async function updateStateClapCount(state, ipfsHash) {
     }
 }
 
+async function updateStateComments(state, imageHash) {
+    var commentsIpfsHashes = await getComments(state, imageHash);
+    var comments = [];
+
+    for(var commentIndex = 0; commentIndex < commentsIpfsHashes.length; commentIndex++) {
+        var commentIpfsHash = getIpfsHashFromBytes32(commentsIpfsHashes[commentIndex]);
+        
+        var commentEncoded = await node.cat(commentIpfsHash)
+        var comment = commentEncoded.toString('utf8')
+        comments.push(comment)
+    }
+
+    for(var index = 0; index < state.uploads.length; index++) {
+        if (state.uploads[index].ipfsHash == imageHash) {
+            state.uploads[index].comments = comments;
+        }
+    }
+}
+
 async function updateState(state) {
     for(var index = 0; index < state.uploads.length; index++) {
         var clapCount = await getClapCount(state, state.uploads[index].ipfsHash);
+        var commentsIpfsHashes = await getComments(state, state.uploads[index].ipfsHash)
+        var comments = [];
+
+        for(var commentIndex = 0; commentIndex < commentsIpfsHashes.length; commentIndex++) {
+            var commentIpfsHash = getIpfsHashFromBytes32(commentsIpfsHashes[commentIndex]);
+            
+            var commentEncoded = await node.cat(commentIpfsHash)
+            var comment = commentEncoded.toString('utf8')
+            comments.push(comment)
+        }
+
         state.uploads[index].clapCount = clapCount;
-        state.uploads[index].comments = ["test1", "test2"]
+        state.uploads[index].comments = comments;
     }
 }
 

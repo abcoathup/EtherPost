@@ -7,7 +7,5 @@ module.exports = function (comment) {
   <div>
     ${comment}
   </div>
-  <hr />
-
   `
 }
