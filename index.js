@@ -52,8 +52,6 @@ app.use(function (state, emitter) {
             const uploader = event.returnValues.uploader;
             var ipfsHash = getIpfsHashFromBytes32(event.returnValues.ipfsHash);
             
-            console.log('LogUpload event: ', ipfsHash);
-
             var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
             state.uploads.push(upload);
             emitter.emit('render')
@@ -85,7 +83,7 @@ app.use(function (state, emitter) {
     })
 
     emitter.on('upload', function (file) {
-        console.log('Upload file: ', file.name)
+        console.log('Upload file to IPFS: ', file.name)
         const reader = new FileReader();
         reader.onloadend = function () {
             const buf = buffer.Buffer(reader.result)
@@ -99,7 +97,7 @@ app.use(function (state, emitter) {
                 state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
-                    console.log("Saved post to smart contract: ", ipfsHash)
+                    console.log("Saved upload to smart contract: ", ipfsHash)
                 })
             })
         }
@@ -167,8 +165,6 @@ async function getUploads(state) {
 
 async function updateStateClapCount(state, ipfsHash) {
     var clapCount = await getClapCount(state, ipfsHash);
-    console.log("Clap Count", clapCount)
-
     for(var index = 0; index < state.uploads.length; index++) {
         if (state.uploads[index].ipfsHash == ipfsHash) {
             state.uploads[index].clapCount = clapCount;
