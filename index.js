@@ -39,7 +39,10 @@ app.use(function (state, emitter) {
         // Set up contract interface
         state.contractInstance = new web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
         await getUploads(state);
-        emitter.emit('render')
+        emitter.emit('render');
+
+        await updateState(state);
+        emitter.emit('render');
 
         state.contractInstance.events.LogUpload((err, event) => {
             if (err) {
@@ -53,6 +56,19 @@ app.use(function (state, emitter) {
 
             var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
             state.uploads.push(upload);
+            emitter.emit('render')
+        })
+        
+        state.contractInstance.events.LogClap(async (err, event) => {
+            if (err) {
+              // something went wrong
+              console.log(err);
+            } 
+            const clapper = event.returnValues.clapper;
+            var ipfsHash = getIpfsHashFromBytes32(event.returnValues.ipfsHash);
+            
+            await updateStateClapCount(state, ipfsHash);
+            
             emitter.emit('render')
         })
 
@@ -69,7 +85,7 @@ app.use(function (state, emitter) {
     })
 
     emitter.on('upload', function (file) {
-        console.log('Upload file: ', file)
+        console.log('Upload file: ', file.name)
         const reader = new FileReader();
         reader.onloadend = function () {
             const buf = buffer.Buffer(reader.result)
@@ -148,3 +164,22 @@ async function getUploads(state) {
         state.uploads.push(upload);            
     });
 }
+
+async function updateStateClapCount(state, ipfsHash) {
+    var clapCount = await getClapCount(state, ipfsHash);
+    console.log("Clap Count", clapCount)
+
+    for(var index = 0; index < state.uploads.length; index++) {
+        if (state.uploads[index].ipfsHash == ipfsHash) {
+            state.uploads[index].clapCount = clapCount;
+        }
+    }
+}
+
+async function updateState(state) {
+    for(var index = 0; index < state.uploads.length; index++) {
+        var clapCount = await getClapCount(state, state.uploads[index].ipfsHash);
+        state.uploads[index].clapCount = clapCount;
+    }
+}
+
