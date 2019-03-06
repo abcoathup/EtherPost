@@ -20,7 +20,7 @@ var node = new IPFS('ipfs.infura.io', '5001', {protocol: 'https'})
 
 app.use(function (state, emitter) {
 
-    state.posts = [];
+    state.uploads = [];
 
     emitter.on('DOMContentLoaded', async () => {
         // Check for web3 instance. Create if necessary.
@@ -38,7 +38,7 @@ app.use(function (state, emitter) {
 
         // Set up contract interface
         state.contractInstance = new web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
-        await getPosts(state);
+        await getUploads(state);
         emitter.emit('render')
 
         state.contractInstance.events.LogUpload((err, event) => {
@@ -52,8 +52,8 @@ app.use(function (state, emitter) {
     
             console.log('LogUpload event: ', ipfsHash);
 
-            var post = { ipfsUrl: ipfsUrl };
-            state.posts.push(post);
+            var upload = { ipfsUrl: ipfsUrl };
+            state.uploads.push(upload);
             emitter.emit('render')
         })
 
@@ -119,7 +119,7 @@ function getIpfsHashFromBytes32(bytes32Hex) {
   return str
 }
 
-function getPostsForUser(state, user) {
+function getUploadsForUser(state, user) {
     return new Promise(function (resolve, reject) {
         state.contractInstance.methods.getUploads(user).call().then(function (response) {
             resolve(response);
@@ -127,14 +127,14 @@ function getPostsForUser(state, user) {
     });
 }
 
-async function getPosts(state) {
+async function getUploads(state) {
     const accounts = await web3.eth.getAccounts();
-    var posts = await getPostsForUser(state, accounts[0]);
-    posts.forEach(function(item, index) {
+    var uploads = await getUploadsForUser(state, accounts[0]);
+    uploads.forEach(function(item, index) {
         var ipfsHash = getIpfsHashFromBytes32(item);
         var ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
 
-        var post = { ipfsUrl: ipfsUrl };
-        state.posts.push(post);            
+        var upload = { ipfsUrl: ipfsUrl };
+        state.uploads.push(upload);            
     });
 }

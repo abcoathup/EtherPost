@@ -1,7 +1,7 @@
 // import choo's template helper
 var html = require('choo/html')
 
-var post = require('./post.js')
+var uploadTemplate = require('./upload.js')
 
 //takes an IPFS hash and displays the corresponding file
 //has an upload form that allows uploading a file to IPFS
@@ -17,7 +17,7 @@ module.exports = function (state, emit) {
             <input type="submit" value="Add">
         </form>
         <br />
-        ${state.posts.map(post)}
+        ${state.uploads.map(uploadTemplate)}
     </div>`
 
     function upload(e) {
