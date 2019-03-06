@@ -5,7 +5,11 @@ module.exports = function (post) {
 
   // create html template
   return html`
-  <a href="${post.ipfsUrl}"><img src="${post.ipfsUrl}" /></a>
+  <div>
+    <div>
+      <img src="${post.ipfsUrl}" />
+    </div>
+  </div>
 
   `
 }
