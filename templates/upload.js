@@ -1,5 +1,7 @@
 var html = require('choo/html')
 
+var commentTemplate = require('./comment.js')
+
 module.exports = function (upload, clap, comment) {
   var ipfsHash = upload.ipfsHash;
   var comments = upload.comments;
@@ -20,6 +22,7 @@ module.exports = function (upload, clap, comment) {
       <input type="text" id="comment" name="comment">
       <input type="submit" value="Comment">
     </form>
+    ${upload.comments.map(commentTemplate)}
 
   </div>
 

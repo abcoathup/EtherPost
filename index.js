@@ -196,6 +196,7 @@ async function updateState(state) {
     for(var index = 0; index < state.uploads.length; index++) {
         var clapCount = await getClapCount(state, state.uploads[index].ipfsHash);
         state.uploads[index].clapCount = clapCount;
+        state.uploads[index].comments = ["test1", "test2"]
     }
 }
 
