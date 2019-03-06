@@ -112,6 +112,26 @@ app.use(function (state, emitter) {
                 console.log("Saved clap to smart contract: ", ipfsHash)
             })
     })
+
+    emitter.on('comment', function (data) {
+        var imageHash = data.ipfsHash;
+        console.log('Upload comment to IPFS: ', data.comment)
+
+        const buf = buffer.Buffer(data.comment)
+        node.add(buf, (err, result) => {
+            if (err) {
+                console.error(err)
+                return
+            }
+            var commentHash = result[0].hash;
+                
+            state.contractInstance.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: web3.eth.defaultAccount })
+                .on('error', console.error)
+                .on('receipt', async receipt => {
+                    console.log("Saved comment to smart contract: ", commentHash)
+            })
+        })
+    })
 })
 
 // create a route

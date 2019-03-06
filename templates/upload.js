@@ -1,6 +1,6 @@
 var html = require('choo/html')
 
-module.exports = function (upload, clap) {
+module.exports = function (upload, clap, comment) {
   var ipfsHash = upload.ipfsHash;
   var comments = upload.comments;
   var commentCount = comments.length;
@@ -9,12 +9,18 @@ module.exports = function (upload, clap) {
 
   // create html template
   return html`
-  <div>
+  <div id="${ipfsHash}">
     <div>
       <img src="${ipfsUrl}" />
     </div>
-    <div><span id="${ipfsHash}" onclick="${clap}">Clap</span>${clapCount}</div>
+    <div><span onclick="${clap}">Clap</span>${clapCount}</div>
     <div><span>Comment</span>${commentCount}</div>
+    <form name="${ipfsHash}" onsubmit="${comment}" method="post">
+      <label for="comment">Comment:</label>
+      <input type="text" id="comment" name="comment">
+      <input type="submit" value="Comment">
+    </form>
+
   </div>
 
   `

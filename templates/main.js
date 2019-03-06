@@ -28,11 +28,19 @@ module.exports = function (state, emit) {
 
     function onClap(e) {
         e.preventDefault()
-        var ipfsHash = e.target.id;
+        var ipfsHash = e.target.parentNode.parentNode.id;       
         emit('clap', ipfsHash)
     }
 
+    function onComment(e) {
+        e.preventDefault()
+        var ipfsHash = e.target.name;
+        var comment = e.target.comment.value;
+        var data = { ipfsHash: ipfsHash, comment: comment };
+        emit('comment', data)
+    }
+
     function upload(upload, i) {
-        return uploadTemplate(upload, onClap)
+        return uploadTemplate(upload, onClap, onComment)
     }
 }
