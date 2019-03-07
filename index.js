@@ -1,21 +1,12 @@
-// import choo
 var choo = require('choo')
-// import template
 var main = require('./templates/main');
-// import web3
 var Web3 = require('web3')
-// Import contract ABI
 var contractABI = require("./dist/contracts/EtherPost.json").abiDefinition
-// Buffer for files
 var buffer = require('buffer')
-// bs58
 var bs58 = require('bs58')
-
-// initialize choo
-var app = choo()
-
-// Initialize IPFS
 var IPFS = require('ipfs-http-client')
+
+var app = choo()
 var node = new IPFS('ipfs.infura.io', '5001', {protocol: 'https'})
 
 app.use(function (state, emitter) {
@@ -23,30 +14,51 @@ app.use(function (state, emitter) {
     state.uploads = [];
 
     emitter.on('DOMContentLoaded', async () => {
-        // Check for web3 instance. Create if necessary.
-        // Access MetaMask
         if (window.ethereum) {
+            window.web3 = new Web3(ethereum);
             try {
-                await window.ethereum.enable()
+                // Request account access if needed
+                await ethereum.enable();
+                // Acccounts now exposed
+                web3.eth.sendTransaction({/* ... */});
             } catch (error) {
-                console.log(error)
+                // User denied account access...
             }
         }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+            window.web3 = new Web3(web3.currentProvider);
+            // Acccounts always exposed
+            web3.eth.sendTransaction({/* ... */});
+        }
+        // Non-dapp browsers...
+        else {
+            console.log('Non-Ethereum browser detected.');
+            // Set up web3 provider
+            window.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
+        }        
 
-        // Set up web3 provider
-        web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
+        ethereum.on('accountsChanged', function (accounts) {
+            window.web3.eth.defaultAccount = accounts[0]
+            state.account = window.web3.eth.defaultAccount;
+            emitter.emit('render');
+        })
 
         // Set up contract interface
-        state.contractInstance = new web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
+        state.contractInstance = new window.web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
 
-        // Unlock account
-        const accounts = await web3.eth.getAccounts()
-        web3.eth.personal.unlockAccount(accounts[0], async function (error, result) {
+        var accounts = await window.web3.eth.getAccounts()
+        window.web3.eth.defaultAccount = accounts[0]
+        state.account = window.web3.eth.defaultAccount;
+        emitter.emit('render');
+
+        // Unlock account only for ganache
+        window.web3.eth.personal.unlockAccount(state.account, async function (error, result) {
             if (error) {
                 console.error(error)
             }
             else {
-                web3.eth.defaultAccount = accounts[0]
+                console.log("Unlocked account: ", state.account);
             }
         });
         
@@ -57,6 +69,10 @@ app.use(function (state, emitter) {
         // set state claps and comments
         await setStateClapsAndComments(state);
         emitter.emit('render');
+
+        // Test upload
+        var upload = { ipfsHash: "Qma6e8dovfLyiG2UUfdkSHNPAySzrWLX9qVXb44v1muqcp", clapCount: 0, comments: [] };
+        state.uploads.push(upload);
 
         // Listen for LogUpload smart contract event and update dApp with upload
         state.contractInstance.events.LogUpload(async (err, event) => {
@@ -116,7 +132,7 @@ app.use(function (state, emitter) {
                 }
                 var ipfsHash = result[0].hash;
                 
-                state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
+                state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: state.account })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
                     console.log("Saved upload to smart contract with ipfsHash: ", ipfsHash)
@@ -129,7 +145,7 @@ app.use(function (state, emitter) {
 
     // Listen for clap dApp event and save clap to smart contract
     emitter.on('clap', function (ipfsHash) {
-        state.contractInstance.methods.clap(getBytes32FromIpfsHash(ipfsHash)).send({ from: web3.eth.defaultAccount })
+        state.contractInstance.methods.clap(getBytes32FromIpfsHash(ipfsHash)).send({ from: state.account })
             .on('error', console.error)
             .on('receipt', async receipt => {
                 console.log("Saved clap to smart contract for upload with ipfsHash: ", ipfsHash)
@@ -149,7 +165,7 @@ app.use(function (state, emitter) {
             }
             var commentHash = result[0].hash;
                 
-            state.contractInstance.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: web3.eth.defaultAccount })
+            state.contractInstance.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: window.web3.eth.defaultAccount })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
                     console.log("Saved comment to smart contract with ipfsHash: ", commentHash)
@@ -207,15 +223,14 @@ function getUploadsForUser(state, user) {
 }
 
 async function setStateUploads(state) {
-    const accounts = await web3.eth.getAccounts();
-    var uploads = await getUploadsForUser(state, accounts[0]);
+    var uploads = await getUploadsForUser(state, state.account);
     
     uploads.forEach(function(item, index) {
         var ipfsHash = getIpfsHashFromBytes32(item);
         
         var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
         state.uploads.push(upload);            
-    });
+    });    
 }
 
 async function setStateUpload(state, ipfsHash) {

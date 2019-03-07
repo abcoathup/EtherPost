@@ -1214,5 +1214,17 @@
         "address": "0x5B83f94DF263E9F219c40b852393bCd3d30925Cc"
       }
     }
+  },
+  "0xa4c37e6def2ce54ea6921ffca25b817453170f3c928af6aec798a977a0adb2fd": {
+    "contracts": {
+      "0xd77da1bf9fd6af815b6ba78080d5fa914e51b89117d880f3c0a6e1322f67bfdb": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      },
+      "0x96398bde085abc11fe7dec430065cb545fdceddb48e02871a8d7da0143787143": {
+        "name": "Identity",
+        "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
+      }
+    }
   }
 }
