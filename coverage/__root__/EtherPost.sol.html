@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">90% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>2/2</span>
+        <span class='fraction'>9/10</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -32,12 +32,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>2/2</span>
+        <span class='fraction'>6/6</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">93.75% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>4/4</span>
+        <span class='fraction'>15/16</span>
       </div>
     </div>
   </div>
@@ -58,19 +58,69 @@
 13
 14
 15
-16</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">88×</span>
+<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
 <span class="cline-any cline-yes">3×</span>
-<span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8×</span>
-<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">3×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.4.24;
@@ -78,14 +128,39 @@
 import "./EtherPostInterface.sol";
 &nbsp;
 contract EtherPost is EtherPostInterface {
-  mapping(address =&gt; bytes32[]) public posts;
+  mapping(address =&gt; bytes32[]) private uploads;
+  mapping(bytes32 =&gt; bytes32[]) private comments;
+  mapping(bytes32 =&gt; uint) private claps;
 &nbsp;
   function upload(bytes32 ipfsHash) public {
-    posts[msg.sender].push(ipfsHash);
+    uploads[msg.sender].push(ipfsHash);
+&nbsp;
+    emit LogUpload(msg.sender, ipfsHash);
   }
 &nbsp;
-  function getUploads(address uploader) public returns(bytes32[]) {
-    return posts[uploader];
+  function getUploads(address uploader) public returns(bytes32[] memory) {
+    return uploads[uploader];
+  }
+&nbsp;
+  function clap(bytes32 ipfsHash) public {
+<span class="cstat-no" title="statement not covered" >    claps[ipfsHash]++;</span>
+&nbsp;
+    emit LogClap(msg.sender, ipfsHash);
+  }
+&nbsp;
+  function getClapCount(bytes32 ipfsHash) public returns(uint) {
+    return claps[ipfsHash];
+  }
+&nbsp;
+  function comment(bytes32 imageHash, bytes32 commentHash) public {
+    uint timestamp = block.timestamp;
+    comments[imageHash].push(commentHash);
+&nbsp;
+    emit LogComment(msg.sender, imageHash, commentHash, timestamp);
+  }
+&nbsp;
+  function getComments(bytes32 ipfsHash) public returns(bytes32[] memory) {
+    return comments[ipfsHash];
   }
 }
 &nbsp;</pre></td></tr>
@@ -94,7 +169,7 @@ contract EtherPost is EtherPostInterface {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 13 2019 14:25:56 GMT+1000 (GMT+10:00)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 06 2019 18:41:20 GMT+1000 (GMT+10:00)
 </div>
 </div>
 <script src="../prettify.js"></script>
