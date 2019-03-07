@@ -1,3 +1,5 @@
+const { BN, constants, expectEvent, shouldFail } = require('openzeppelin-test-helpers');
+
 const EtherPost = require('Embark/contracts/EtherPost');
 const bs58 = require('bs58');
 
@@ -8,6 +10,7 @@ const testHash2 = 'QmSFQ7KxjCVTNps823VmVu8jkwXdwDA7TJ8UxF5bZxZ4St';
 const testHash3 = 'Qma6e8dovfLyiG2UUfdkSHNPAySzrWLX9qVXb44v1muqcp';
 const testHash4 = 'QmbVkMHyKXehsAG6Mq8zj1ULZi3vYQf3YWprh5kwdTRZXc';
 const testHash5 = 'QmcDdvUupWv4gPmHYoibEegFtVJTA5gXYpEcDmgeJQHZLB';
+const testHashes = [testHash1, testHash2, testHash3, testHash4, testHash5];
 
 // For documentation please see https://embark.status.im/docs/contracts_testing.html
 config({
@@ -53,15 +56,15 @@ contract("EtherPost", function () {
     });
 
     it('should be able to make multiple uploads', async () => {
-      let uploadCount = 10;
+      let uploadCount = 5;
       for (var upload = 0; upload < uploadCount; upload++) {
-        await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
+        await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHashes[upload])).send();
       }
       let uploads = await etherPostInstance.methods.getUploads(accounts[0]).call()
       assert.equal(uploads.length, uploadCount);
 
       for (var upload = 0; upload < uploadCount; upload++) {
-        assert.equal(getIpfsHashFromBytes32(uploads[upload]), testHash1);
+        assert.equal(getIpfsHashFromBytes32(uploads[upload]), testHashes[upload]);
       }
     });
 
@@ -86,6 +89,11 @@ contract("EtherPost", function () {
       assert.equal(getIpfsHashFromBytes32(uploads[1]), testHash4);
       assert.equal(getIpfsHashFromBytes32(uploads[2]), testHash5);
     });
+
+    it('should not be able to upload the same hash', async () => {
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]});
+      await shouldFail.reverting(etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]}));
+    });
   });
 
   context('Comments', async function () {
@@ -94,6 +102,14 @@ contract("EtherPost", function () {
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
       let comments = await etherPostInstance.methods.getComments(getBytes32FromIpfsHash(testHash1)).call();
       assert.equal(comments.length, 0);
+    });
+
+    it('should not to be able to comment on non existant upload', async () => {
+      await shouldFail.reverting(etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send());
+    });
+
+    it('should not to be able to get comments on non existant upload', async () => {
+      await shouldFail.reverting(etherPostInstance.methods.getComments(getBytes32FromIpfsHash(testHash1)).call());
     });
 
     it('should be able to comment and receive comment event', async () => {
@@ -139,6 +155,14 @@ contract("EtherPost", function () {
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
       let claps = await etherPostInstance.methods.getClapCount(getBytes32FromIpfsHash(testHash1)).call();
       assert.equal(claps, 0);
+    });
+
+    it('should not to be able to clap on non existant upload', async () => {
+      await shouldFail.reverting(etherPostInstance.methods.clap(getBytes32FromIpfsHash(testHash1)).send());
+    });
+
+    it('should not to be able to get clap count on non existant upload', async () => {
+      await shouldFail.reverting(etherPostInstance.methods.getClapCount(getBytes32FromIpfsHash(testHash1)).call());
     });
 
     it('should be able to clap and receive clap event', async () => {

@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "homepage": "",
-  "devDependencies": {},
+  "devDependencies": {
+    "openzeppelin-test-helpers": "^0.1.2"
+  },
   "dependencies": {
     "bs58": "^4.0.1",
     "budo": "^11.6.1",

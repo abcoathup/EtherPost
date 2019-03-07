@@ -1,7 +1,11 @@
+const { BN, constants, expectEvent, shouldFail } = require('openzeppelin-test-helpers');
+
 const Identity = require('Embark/contracts/Identity');
 
+let identityInstance;
 let accounts;
-let username = "username";
+let name = "name";
+let name2 = "name2";
 
 // For documentation please see https://embark.status.im/docs/contracts_testing.html
 config({
@@ -23,22 +27,19 @@ config({
 contract("Identity", function () {
   this.timeout(0);
 
-  it('No username', async () => {
-    let _username = await Identity.methods.names(accounts[0]).call()
-    assert.equal(_username, "");
+  beforeEach(async function() {
+    identityInstance = await Identity.deploy().send();
   });
 
-  it('Register a username', async () => {
-    await Identity.methods.register(username).send()
-    let _username = await Identity.methods.names(accounts[0]).call()
-    assert.equal(username, _username);
+  it('should register a name', async () => {
+    await identityInstance.methods.register(name).send();
+    let _name = await identityInstance.methods.getName(accounts[0]).call();
+    assert.equal(name, _name);
   });
 
-  //Register a username
-  //Lookup a username for an address
-  //Unregister (optional, but you might want to think about it)
-  //Don’t allow others to hijack your name
-  //Only allow the actual owner of an address to register
-
+  it('should fail to register a name if address already registered', async () => {
+    await identityInstance.methods.register(name).send({from: accounts[0]});
+    await shouldFail.reverting(identityInstance.methods.register(name2).send({from: accounts[0]}));
+  });
 });
 
