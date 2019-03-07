@@ -12,6 +12,11 @@ module.exports = function (state, emit) {
     <div>
         <h2>Ether Post</h2>
         <div>${state.name}</div>
+        <form onsubmit="${onSetName}" method="post">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name">
+            <input type="submit" value="Set">
+        </form>
         <div>${state.account}</div>
         <form onsubmit="${onUpload}" method="post">
             <label for="picture">Upload:</label><br>
@@ -26,6 +31,12 @@ module.exports = function (state, emit) {
         e.preventDefault()
         var picture = document.getElementById('picture').files[0];
         emit('upload', picture)
+    }
+
+    function onSetName(e) {
+        e.preventDefault()
+        var name = document.getElementById('name').value;
+        emit('setName', name)
     }
 
     function onClap(e) {

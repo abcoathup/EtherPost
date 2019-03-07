@@ -36,9 +36,10 @@ app.use(function (state, emitter) {
             console.log('Non-Ethereum browser detected.');
         }        
 
-        ethereum.on('accountsChanged', function (accounts) {
+        ethereum.on('accountsChanged', async function (accounts) {
             window.web3.eth.defaultAccount = accounts[0]
             state.account = window.web3.eth.defaultAccount;
+            state.name = await getName(state);
             emitter.emit('render');
         })
 
@@ -150,6 +151,17 @@ app.use(function (state, emitter) {
             .on('error', console.error)
             .on('receipt', async receipt => {
                 console.log("Saved clap to smart contract for upload with ipfsHash: ", ipfsHash)
+            })
+    })
+
+    emitter.on('setName', function (name) {
+        state.identityContract.methods.register(name).send({ from: state.account })
+            .on('error', console.error)
+            .on('receipt', async receipt => {
+                console.log("Registered name to smart contract: ", name);
+                //Could create a smart contract event to trigger
+                state.name = name;
+                emitter.emit('render')
             })
     })
 
