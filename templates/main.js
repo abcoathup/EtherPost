@@ -11,6 +11,7 @@ module.exports = function (state, emit) {
     return html `
     <div>
         <h2>Ether Post</h2>
+        <div>${state.account}</div>
         <form onsubmit="${onUpload}" method="post">
             <label for="picture">Upload:</label><br>
             <input type="file" id="picture" name="picture" accept="image/gif, image/jpeg, image/png">

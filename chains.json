@@ -726,5 +726,65 @@
         "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
       }
     }
+  },
+  "0x0192fa3397df06f280195ce436918c2cca68437a037b52893945e372743fdd80": {
+    "contracts": {
+      "0xb8f0d3a41f0e0d1edaa5683a7725cbea528fe34a15a840da6798ab0432476be0": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      },
+      "0x458cd4b1b88b18ebd7cc83f4e9049de410b34166de2c15b7211df27e27c7be28": {
+        "name": "Identity",
+        "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
+      }
+    }
+  },
+  "0xdcc172b0b760bf7ec135e3b871e3f940278a5b3c4af1c3080cfec72c6326b160": {
+    "contracts": {
+      "0xb8f0d3a41f0e0d1edaa5683a7725cbea528fe34a15a840da6798ab0432476be0": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      },
+      "0x458cd4b1b88b18ebd7cc83f4e9049de410b34166de2c15b7211df27e27c7be28": {
+        "name": "Identity",
+        "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
+      }
+    }
+  },
+  "0xfa62a6e7a4f54d86712032cb6020da86f4ecdb05784fcb2f456da63f9ebc86b1": {
+    "contracts": {
+      "0x0bdcec5686a1c5c1055eb8fc0137d9987d4f3e67e466610b70021fa9632ac1b8": {
+        "name": "EtherPost",
+        "address": "0xd411f8df536b76787e4C2C8107f70B681F041506"
+      },
+      "0x1cc36d3933529a208247f1f38d63fbd263ef73240ceae2ca96c131a466767387": {
+        "name": "Identity",
+        "address": "0xE2E36c1d4c4FDa53413BC923acaeC79a51f1C061"
+      }
+    }
+  },
+  "0x1108cb711c3f73b50c20f1b385a118656a49e79dae07615605d59cd391148303": {
+    "contracts": {
+      "0xb8f0d3a41f0e0d1edaa5683a7725cbea528fe34a15a840da6798ab0432476be0": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      },
+      "0x458cd4b1b88b18ebd7cc83f4e9049de410b34166de2c15b7211df27e27c7be28": {
+        "name": "Identity",
+        "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
+      }
+    }
+  },
+  "0x5a09d667937b9489be78cd1f858e3b6d5ae57c153753e7f22b349bb66c457dc1": {
+    "contracts": {
+      "0xb8f0d3a41f0e0d1edaa5683a7725cbea528fe34a15a840da6798ab0432476be0": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      },
+      "0x458cd4b1b88b18ebd7cc83f4e9049de410b34166de2c15b7211df27e27c7be28": {
+        "name": "Identity",
+        "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
+      }
+    }
   }
 }
