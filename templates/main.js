@@ -11,6 +11,7 @@ module.exports = function (state, emit) {
     return html `
     <div>
         <h2>Ether Post</h2>
+        <div>${state.name}</div>
         <div>${state.account}</div>
         <form onsubmit="${onUpload}" method="post">
             <label for="picture">Upload:</label><br>

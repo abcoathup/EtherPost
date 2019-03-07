@@ -1,7 +1,8 @@
 var choo = require('choo')
 var main = require('./templates/main');
 var Web3 = require('web3')
-var contractABI = require("./dist/contracts/EtherPost.json").abiDefinition
+var etherPostABI = require("./dist/contracts/EtherPost.json").abiDefinition
+var identityABI = require("./dist/contracts/Identity.json").abiDefinition
 var buffer = require('buffer')
 var bs58 = require('bs58')
 var IPFS = require('ipfs-http-client')
@@ -42,11 +43,14 @@ app.use(function (state, emitter) {
         })
 
         // Set up contract interface
-        state.contractInstance = new window.web3.eth.Contract(contractABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
+        state.etherPostContract = new window.web3.eth.Contract(etherPostABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
+        state.identityContract = new window.web3.eth.Contract(identityABI, "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28")
 
         var accounts = await window.web3.eth.getAccounts()
         window.web3.eth.defaultAccount = accounts[0]
         state.account = window.web3.eth.defaultAccount;
+        state.name = await getName(state);
+            
         emitter.emit('render');
 
         // Unlock account only for ganache
@@ -72,7 +76,7 @@ app.use(function (state, emitter) {
         state.uploads.push(upload);
 
         // Listen for LogUpload smart contract event and update dApp with upload
-        state.contractInstance.events.LogUpload(async (err, event) => {
+        state.etherPostContract.events.LogUpload(async (err, event) => {
             if (err) {
               console.log(err);
             } 
@@ -86,7 +90,7 @@ app.use(function (state, emitter) {
         })
         
         // Listen for LogUpload smart contract event and update dApp with clap
-        state.contractInstance.events.LogClap(async (err, event) => {
+        state.etherPostContract.events.LogClap(async (err, event) => {
             if (err) {
               console.log(err);
             } 
@@ -100,7 +104,7 @@ app.use(function (state, emitter) {
         })
 
         // Listen for LogComment smart contract event and update dApp with comment
-        state.contractInstance.events.LogComment(async (err, event) => {
+        state.etherPostContract.events.LogComment(async (err, event) => {
             if (err) {
               console.log(err);
             } 
@@ -129,7 +133,7 @@ app.use(function (state, emitter) {
                 }
                 var ipfsHash = result[0].hash;
                 
-                state.contractInstance.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: state.account })
+                state.etherPostContract.methods.upload(getBytes32FromIpfsHash(ipfsHash)).send({ from: state.account })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
                     console.log("Saved upload to smart contract with ipfsHash: ", ipfsHash)
@@ -142,7 +146,7 @@ app.use(function (state, emitter) {
 
     // Listen for clap dApp event and save clap to smart contract
     emitter.on('clap', function (ipfsHash) {
-        state.contractInstance.methods.clap(getBytes32FromIpfsHash(ipfsHash)).send({ from: state.account })
+        state.etherPostContract.methods.clap(getBytes32FromIpfsHash(ipfsHash)).send({ from: state.account })
             .on('error', console.error)
             .on('receipt', async receipt => {
                 console.log("Saved clap to smart contract for upload with ipfsHash: ", ipfsHash)
@@ -162,7 +166,7 @@ app.use(function (state, emitter) {
             }
             var commentHash = result[0].hash;
                 
-            state.contractInstance.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: window.web3.eth.defaultAccount })
+            state.etherPostContract.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: window.web3.eth.defaultAccount })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
                     console.log("Saved comment to smart contract with ipfsHash: ", commentHash)
@@ -195,7 +199,7 @@ function getIpfsHashFromBytes32(bytes32Hex) {
 // Return clap count from smart contract for given upload ipfsHash
 function getClapCount(state, ipfsHash) {
     return new Promise(function (resolve, reject) {
-        state.contractInstance.methods.getClapCount(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
+        state.etherPostContract.methods.getClapCount(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
             resolve(response);
         });
     });
@@ -204,7 +208,7 @@ function getClapCount(state, ipfsHash) {
 // Return comments from smart contract for given upload ipfsHash
 function getComments(state, ipfsHash) {
     return new Promise(function (resolve, reject) {
-        state.contractInstance.methods.getComments(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
+        state.etherPostContract.methods.getComments(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
             resolve(response);
         });
     });
@@ -213,7 +217,15 @@ function getComments(state, ipfsHash) {
 // Return uploads from smart contract for given user
 function getUploadsForUser(state, user) {
     return new Promise(function (resolve, reject) {
-        state.contractInstance.methods.getUploads(user).call().then(function (response) {
+        state.etherPostContract.methods.getUploads(user).call().then(function (response) {
+            resolve(response);
+        });
+    });
+}
+
+function getName(state) {
+    return new Promise(function (resolve, reject) {
+        state.identityContract.methods.getName(state.account).call().then(function (response) {
             resolve(response);
         });
     });
