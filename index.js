@@ -14,13 +14,14 @@ app.use(function (state, emitter) {
     state.uploads = [];
 
     emitter.on('DOMContentLoaded', async () => {
+        // Set up web3 provider
+        // Local provider commented out, using MetaMask instead
+        // web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
         if (window.ethereum) {
             window.web3 = new Web3(ethereum);
             try {
                 // Request account access if needed
                 await ethereum.enable();
-                // Acccounts now exposed
-                web3.eth.sendTransaction({/* ... */});
             } catch (error) {
                 // User denied account access...
             }
@@ -28,14 +29,10 @@ app.use(function (state, emitter) {
         // Legacy dapp browsers...
         else if (window.web3) {
             window.web3 = new Web3(web3.currentProvider);
-            // Acccounts always exposed
-            web3.eth.sendTransaction({/* ... */});
         }
         // Non-dapp browsers...
         else {
             console.log('Non-Ethereum browser detected.');
-            // Set up web3 provider
-            window.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
         }        
 
         ethereum.on('accountsChanged', function (accounts) {
