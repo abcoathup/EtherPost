@@ -59,7 +59,7 @@ app.use(function (state, emitter) {
         emitter.emit('render');
 
         // Listen for LogUpload smart contract event and update dApp with upload
-        state.contractInstance.events.LogUpload((err, event) => {
+        state.contractInstance.events.LogUpload(async (err, event) => {
             if (err) {
               console.log(err);
             } 
@@ -67,8 +67,8 @@ app.use(function (state, emitter) {
             const uploader = event.returnValues.uploader;
             var ipfsHash = getIpfsHashFromBytes32(event.returnValues.ipfsHash);
             
-            var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
-            state.uploads.push(upload);
+            await setStateUpload(state, ipfsHash);
+
             emitter.emit('render')
         })
         
@@ -216,6 +216,20 @@ async function setStateUploads(state) {
         var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
         state.uploads.push(upload);            
     });
+}
+
+async function setStateUpload(state, ipfsHash) {
+    var exists = false;
+    for(var index = 0; index < state.uploads.length; index++) {
+        if (state.uploads[index].ipfsHash == ipfsHash) {
+            exists = true;
+        }
+    }
+
+    if(!exists) {
+        var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
+        state.uploads.push(upload);
+    }
 }
 
 async function setStateClapCount(state, ipfsHash) {
