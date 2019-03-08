@@ -11,7 +11,7 @@ contract Identity {
   mapping (address => string) private names;
 
   /**
-   * @dev Register name
+   * @dev Register name (must not have already registered)
    * @param name to register for calling address
    */
   function register(string memory name) public {
@@ -25,7 +25,6 @@ contract Identity {
    * @return name
    */
   function getName(address user) public view returns(string memory) {
-    require(bytes(names[msg.sender]).length != 0, "No name registered for address");
     return names[user];
   }
 }
