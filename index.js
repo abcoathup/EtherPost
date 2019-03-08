@@ -16,25 +16,28 @@ app.use(function (state, emitter) {
 
     emitter.on('DOMContentLoaded', async () => {
         // Set up web3 provider
-        // Local provider commented out, using MetaMask instead
-        // web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
-        if (window.ethereum) {
-            window.web3 = new Web3(ethereum);
-            try {
-                // Request account access if needed
-                await ethereum.enable();
-            } catch (error) {
-                // User denied account access...
+        var useMetaMask = true;
+        if (useMetaMask) {
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                } catch (error) {
+                    // User denied account access...
+                }
             }
+            // Legacy dapp browsers...
+            else if (window.web3) {
+                window.web3 = new Web3(web3.currentProvider);
+            }
+            // Non-dapp browsers...
+            else {
+                console.log('Non-Ethereum browser detected.');
+            }        
+        } else {
+            window.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8555'));
         }
-        // Legacy dapp browsers...
-        else if (window.web3) {
-            window.web3 = new Web3(web3.currentProvider);
-        }
-        // Non-dapp browsers...
-        else {
-            console.log('Non-Ethereum browser detected.');
-        }        
 
         ethereum.on('accountsChanged', async function (accounts) {
             window.web3.eth.defaultAccount = accounts[0]
@@ -55,14 +58,16 @@ app.use(function (state, emitter) {
         emitter.emit('render');
 
         // Unlock account only for ganache
-        window.web3.eth.personal.unlockAccount(state.account, async function (error, result) {
-            if (error) {
-                console.error(error)
-            }
-            else {
-                console.log("Unlocked account: ", state.account);
-            }
-        });
+        if(!useMetaMask) {
+            web3.eth.personal.unlockAccount(state.account, async function (error, result) {
+                if (error) {
+                    console.error(error)
+                }
+                else {
+                    console.log("Unlocked account: ", state.account);
+                }
+            });
+        }
         
         // set state uploads first to display
         await setStateUploads(state);
@@ -178,7 +183,7 @@ app.use(function (state, emitter) {
             }
             var commentHash = result[0].hash;
                 
-            state.etherPostContract.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: window.web3.eth.defaultAccount })
+            state.etherPostContract.methods.comment(getBytes32FromIpfsHash(imageHash), getBytes32FromIpfsHash(commentHash)).send({ from: state.account })
                 .on('error', console.error)
                 .on('receipt', async receipt => {
                     console.log("Saved comment to smart contract with ipfsHash: ", commentHash)
