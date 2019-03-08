@@ -14,20 +14,10 @@ module.exports = function (state, emit) {
     <div class="w3-top">
      <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
       <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
-      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="News"><i class="fa fa-globe"></i></a>
-      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings"><i class="fa fa-user"></i></a>
-      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-envelope"></i></a>
-      <div class="w3-dropdown-hover w3-hide-small">
-        <button class="w3-button w3-padding-large" title="Notifications"><i class="fa fa-bell"></i><span class="w3-badge w3-right w3-small w3-green">3</span></button>     
-        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
-          <a href="#" class="w3-bar-item w3-button">One new friend request</a>
-          <a href="#" class="w3-bar-item w3-button">John Doe posted on your wall</a>
-          <a href="#" class="w3-bar-item w3-button">Jane likes your post</a>
-        </div>
-      </div>
+      <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>EtherPost</a>
+      
       <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
-        <img src="/w3images/avatar2.png" class="w3-circle" style="height:23px;width:23px" alt="Avatar">
+        ${state.name}
       </a>
      </div>
     </div>
@@ -75,8 +65,8 @@ function openNav() {
             <!-- Profile -->
               <div class="w3-card w3-round w3-white">
                 <div class="w3-container">
-                 <h4 class="w3-center">My Profile</h4>
-                 <p class="w3-center"><img src="/w3images/avatar3.png" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+                 <h4 class="w3-center">${state.name}</h4>
+                 <p class="w3-center w3-tiny">${state.account}</p>
                  <hr>
                  <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
                 </div>
@@ -86,7 +76,6 @@ function openNav() {
                     <input type="text" id="name" name="name">
                     <input type="submit" value="Set">
                 </form>
-                <div>${state.account}</div>
                 <br />
               </div>
               <br>
@@ -159,7 +148,7 @@ function openNav() {
         </footer>
         
         <footer class="w3-container w3-theme-d5">
-          <p>Powered by Caffinated Sugar Free Softdrink</p>
+          <p>Powered by Caffinated Sugar Free Softdrink (TM)</p>
         </footer>
     </div>
     `
@@ -180,7 +169,7 @@ function openNav() {
 
     function onClap(e) {
         e.preventDefault()
-        var ipfsHash = e.target.parentNode.parentNode.id;       
+        var ipfsHash = e.target.parentNode.id;       
         emit('clap', ipfsHash)
     }
 

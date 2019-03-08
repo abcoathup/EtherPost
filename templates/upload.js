@@ -13,11 +13,11 @@ module.exports = function (upload, clap, comment) {
   return html`
   <div id="${ipfsHash}" class="w3-container w3-card w3-white w3-round w3-margin">
   <br>
-  <span class="w3-right w3-opacity">${ipfsHash}</span>
+  <span class="w3-right w3-tiny w3-opacity">${ipfsHash}</span>
   <hr class="w3-clear">
   <img src="${ipfsUrl}" style="width:100%" class="w3-margin-bottom">
-  <button onclick="${clap}" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-hand-paper-o"></i>  Clap<span class="w3-badge w3-right w3-small w3-green">${clapCount}</span></button> 
-  <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment<span class="w3-badge w3-right w3-small w3-green">${commentCount}</span></button> 
+  <button onclick="${clap}" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-hand-paper-o"></i>  Clap<span class="w3-badge w3-right w3-margin-left w3-blue">${clapCount}</span></button> 
+  <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment<span class="w3-badge w3-right w3-margin-left w3-blue">${commentCount}</span></button> 
   
   <form name="${ipfsHash}" onsubmit="${comment}" method="post">
     <label for="comment">Comment:</label>

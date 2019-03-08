@@ -16,7 +16,7 @@ app.use(function (state, emitter) {
 
     emitter.on('DOMContentLoaded', async () => {
         // Set up web3 provider
-        var useMetaMask = true;
+        var useMetaMask = false;
         if (useMetaMask) {
             if (window.ethereum) {
                 window.web3 = new Web3(ethereum);
@@ -48,6 +48,7 @@ app.use(function (state, emitter) {
 
         // Set up contract interface
         state.etherPostContract = new window.web3.eth.Contract(etherPostABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
+        state.etherPostContract.options.gas = 5000000; 
         state.identityContract = new window.web3.eth.Contract(identityABI, "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28")
 
         var accounts = await window.web3.eth.getAccounts()
