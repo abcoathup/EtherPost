@@ -7,30 +7,46 @@ import "./EtherPostInterface.sol";
  * @dev EtherPost is a contract for storing image uploads, comments and claps.
  */
 contract EtherPost is EtherPostInterface {
-  mapping(address => bytes32[]) private uploadsByAddress;
-  mapping(bytes32 => uint) private claps;
-  mapping(bytes32 => bytes32[]) private comments;
-  mapping(bytes32 => bool) private uploads;
 
   /**
-   * @dev Modifier to make a function callable only when upload doesn't exist.
+   * @dev Uploader to array of uploads (IPFS Hashes) mapping
+   */
+  mapping(address => bytes32[]) private uploads;
+
+  /**
+   * @dev Upload (IPFS Hash) to count of claps mapping
+   */
+  mapping(bytes32 => uint) private claps;
+
+  /**
+   * @dev Upload (IPFS Hash) to array of comments (IPFS Hash) mapping
+   */
+  mapping(bytes32 => bytes32[]) private comments;
+  
+  /**
+   * @dev Upload (IPFS Hash) to uploader address mapping
+   */
+  mapping(bytes32 => address) private uploader;
+
+  /**
+   * @dev Modifier checks for upload doesn't exist.
    */
   modifier uploadNotExists(bytes32 ipfsHash) {
-    require(uploads[ipfsHash] == false, "Upload exists");
+    require(uploader[ipfsHash] == address(0), "Upload exists");
     _;
   }
 
   /**
-   * @dev Modifier to make a function callable only when upload exists.
+   * @dev Modifier checks for upload exists.
    */
   modifier uploadExists(bytes32 ipfsHash) {
-    require(uploads[ipfsHash] == true, "Upload doesn't exist");
+    require(uploader[ipfsHash] != address(0), "Upload doesn't exist");
     _;
   }
 
   function upload(bytes32 ipfsHash) public uploadNotExists(ipfsHash) {
-    uploads[ipfsHash] = true;
-    uploadsByAddress[msg.sender].push(ipfsHash);
+    uploader[ipfsHash] = msg.sender;
+    uploads[msg.sender].push(ipfsHash);
  
     emit LogUpload(msg.sender, ipfsHash);
   }
@@ -49,7 +65,11 @@ contract EtherPost is EtherPostInterface {
   }
 
   function getUploads(address uploader) public returns(bytes32[] memory) {
-    return uploadsByAddress[uploader];
+    return uploads[uploader];
+  }
+
+  function getUploader(bytes32 ipfsHash) public returns(address memory) {
+    return uploader[ipfsHash];
   }
 
   function getClapCount(bytes32 ipfsHash) public uploadExists(ipfsHash) returns(uint) {
