@@ -13,9 +13,7 @@ module.exports = function (upload, clap, comment) {
   return html`
   <div id="${ipfsHash}" class="w3-container w3-card w3-white w3-round w3-margin">
   <br>
-  <img src="/w3images/avatar5.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
-  <span class="w3-right w3-opacity">16 min</span>
-  <h4>Jane Doe</h4><br>
+  <span class="w3-right w3-opacity">${ipfsHash}</span>
   <hr class="w3-clear">
   <img src="${ipfsUrl}" style="width:100%" class="w3-margin-bottom">
   <button onclick="${clap}" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-hand-paper-o"></i>  Clap<span class="w3-badge w3-right w3-small w3-green">${clapCount}</span></button> 

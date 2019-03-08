@@ -77,10 +77,6 @@ app.use(function (state, emitter) {
         await setStateClapsAndComments(state);
         emitter.emit('render');
 
-        // Test upload
-        var upload = { ipfsHash: "Qma6e8dovfLyiG2UUfdkSHNPAySzrWLX9qVXb44v1muqcp", clapCount: 0, comments: [] };
-        state.uploads.push(upload);
-
         // Listen for LogUpload smart contract event and update dApp with upload
         state.etherPostContract.events.LogUpload(async (err, event) => {
             if (err) {
