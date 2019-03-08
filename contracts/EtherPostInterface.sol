@@ -1,5 +1,11 @@
 pragma solidity 0.4.24;
 
+/**
+ * @title EtherPostInterface
+ * @author RMIT Online (Flex Dapps)
+ * @dev EtherPostInterface for storing image uploads, comments and claps.
+ * IPFS hashes are encoded to bytes32 with Qm removed.
+ */
 contract EtherPostInterface {
 
   event LogUpload(address uploader, bytes32 ipfsHash);

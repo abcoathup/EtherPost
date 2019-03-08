@@ -37,9 +37,22 @@ contract("Identity", function () {
     assert.equal(name, _name);
   });
 
+  it('should register a name for multiple accounts', async () => {
+    await identityInstance.methods.register(name).send();
+    let _name = await identityInstance.methods.getName(accounts[0]).call();
+    assert.equal(name, _name);
+
+    await identityInstance.methods.register(name2).send({from: accounts[1]});
+    let _name2 = await identityInstance.methods.getName(accounts[1]).call();
+    assert.equal(name2, _name2);
+  });
+
   it('should fail to register a name if address already registered', async () => {
     await identityInstance.methods.register(name).send({from: accounts[0]});
     await shouldFail.reverting(identityInstance.methods.register(name2).send({from: accounts[0]}));
   });
-});
 
+  it('should fail to get a name if address not registered', async () => {
+    await shouldFail.reverting(identityInstance.methods.getName(accounts[0]).call());
+  });
+});
