@@ -46,6 +46,26 @@ module.exports = function (state, emit) {
             <!-- Left Column -->
             <div class="w3-col m3">
 
+            <!-- Profile -->
+            <div class="w3-card w3-round w3-white">
+              <div class="w3-container">
+                <h4 class="w3-center">${state.name}</h4>
+                <hr>
+              </div>
+              <form class="w3-container" onsubmit="${onSetName}" method="post">
+                <div>
+                  <div>
+                    <input class="w3-input w3-border" type="text" id="name" name="name" placeholder="Register a name">
+                  </div>
+                  <div>
+                    <input class="w3-theme w3-right" type="submit" value="Set">
+                  </div>
+                </div>
+              </form>
+              <br />
+            </div>
+            <br>
+
             <!-- Alert Box -->
             <div class="w3-container w3-display-container w3-round w3-theme-l4 w3-border w3-theme-border w3-margin-bottom w3-hide-small">
               <span onclick="this.parentElement.style.display='none'" class="w3-button w3-theme-l3 w3-display-topright">
@@ -54,23 +74,6 @@ module.exports = function (state, emit) {
               <p><strong>Hey!</strong></p>
               <p>Please upload more photos.</p>
             </div>
-
-            <!-- Profile -->
-            <div class="w3-card w3-round w3-white">
-              <div class="w3-container">
-                <h4 class="w3-center">${state.name}</h4>
-                <hr>
-                <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
-              </div>
-              <form onsubmit="${onSetName}" method="post">
-                <label for="name">Name:</label><br>
-                <input type="text" id="name" name="name">
-                <input type="submit" value="Set">
-              </form>
-              <br />
-            </div>
-            <br>
-              
           <!-- End Left Column -->
           </div>
             
@@ -80,7 +83,7 @@ module.exports = function (state, emit) {
               <div class="w3-col m12">
                 <div class="w3-card w3-round w3-white">
                   <div class="w3-container w3-padding">
-                    <h5 class="w3-opacity">Uploads are forever so be mindful of future you</h6>
+                    <h5 class="w3-opacity">Uploads are forever so be mindful for future you</h6>
                     <form class="w3-container" onsubmit="${onUpload}" method="post">
                       <div class="w3-row w3-section">
                         <div class="w3-threequarter">

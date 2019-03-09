@@ -1538,5 +1538,17 @@
         "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
       }
     }
+  },
+  "0x1c7c3c305d7ac2ae79821ec98169ead7ae2a83a61c69bb008b3f86bb7b85b5dc": {
+    "contracts": {
+      "0x58be7ba3455605de172ad4645aa4577c6feb9652166b1fcec44c20b7266e06b3": {
+        "name": "EtherPost",
+        "address": "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194"
+      },
+      "0x96398bde085abc11fe7dec430065cb545fdceddb48e02871a8d7da0143787143": {
+        "name": "Identity",
+        "address": "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28"
+      }
+    }
   }
 }
