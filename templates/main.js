@@ -2,12 +2,32 @@
 var html = require('choo/html')
 
 var uploadTemplate = require('./upload.js')
+const blockies = require('ethereum-blockies-png')
 
 //takes an IPFS hash and displays the corresponding file
 //has an upload form that allows uploading a file to IPFS
 
 // export module
 module.exports = function (state, emit) {
+    let registerName
+
+    if (state.name == '') {
+      registerName = html `  
+      <form class="w3-container" onsubmit="${onSetName}" method="post">
+        <div>
+          <div>
+            <input class="w3-input w3-border" type="text" id="name" name="name" placeholder="Register a name">
+          </div>
+          <div>
+            <input class="w3-theme w3-right" type="submit" value="Set">
+          </div>
+        </div>
+      </form>
+      <br />  
+      `
+    }    
+
+
     return html `
     <div>
       <!-- Navbar -->
@@ -50,30 +70,12 @@ module.exports = function (state, emit) {
             <div class="w3-card w3-round w3-white">
               <div class="w3-container">
                 <h4 class="w3-center">${state.name}</h4>
-                <hr>
+                <p class="w3-center"><img src="${blockies.createDataURL({ seed: 'state.account' })}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
               </div>
-              <form class="w3-container" onsubmit="${onSetName}" method="post">
-                <div>
-                  <div>
-                    <input class="w3-input w3-border" type="text" id="name" name="name" placeholder="Register a name">
-                  </div>
-                  <div>
-                    <input class="w3-theme w3-right" type="submit" value="Set">
-                  </div>
-                </div>
-              </form>
-              <br />
+              ${registerName}              
             </div>
             <br>
 
-            <!-- Alert Box -->
-            <div class="w3-container w3-display-container w3-round w3-theme-l4 w3-border w3-theme-border w3-margin-bottom w3-hide-small">
-              <span onclick="this.parentElement.style.display='none'" class="w3-button w3-theme-l3 w3-display-topright">
-                <i class="fa fa-remove"></i>
-              </span>
-              <p><strong>Hey!</strong></p>
-              <p>Please upload more photos.</p>
-            </div>
           <!-- End Left Column -->
           </div>
             
@@ -165,5 +167,10 @@ module.exports = function (state, emit) {
 
     function upload(upload, i) {
         return uploadTemplate(upload, onClap, onComment)
+    }
+
+    function hide(e) {
+      e.preventDefault();
+      e.target.parentNode.style.display='none';
     }
 }
