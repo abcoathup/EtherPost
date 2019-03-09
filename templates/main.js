@@ -153,7 +153,10 @@ module.exports = function (state, emit) {
 
     function onClap(e) {
         e.preventDefault()
-        var ipfsHash = e.target.parentNode.id;       
+        var ipfsHash = e.target.parentNode.id;
+        if (ipfsHash == "") {       
+          ipfsHash = e.target.parentNode.parentNode.id;
+        }
         emit('clap', ipfsHash)
     }
 
