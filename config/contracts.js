@@ -33,22 +33,33 @@ module.exports = {
     ],
     gas: "auto",
     contracts: {
-      // example:
-      //SimpleStorage: {
-      //  args: [ 100 ]
-      //}
+      EtherPost : {
+      }
     }
   },
 
   // default environment, merges with the settings in default
   // assumed to be the intended environment by `embark run`
   development: {
+    gas: "8000000",
     dappConnection: [
       "ws://localhost:8546",
       "http://localhost:8545",
       "$WEB3"  // uses pre existing web3 object if available (e.g in Mist)
-    ]
+    ],
+    contracts: {
+      EtherPost : {
+        args: []
+        //,
+        //onDeploy: [
+        //  "EtherPost.methods.register('abcoathup').send()",
+        //  "EtherPost.methods.upload('0x15fe8589f1682a824b01fa5ec74ae924d80b1268180265f22cef6fe91cbe14f1').send({gasLimit:1500000})"
+        //]
+      }
+    }
+    
   },
+
 
   // merges with the settings in default
   // used with "embark run privatenet"

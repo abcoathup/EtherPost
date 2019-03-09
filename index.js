@@ -67,7 +67,7 @@ app.use(function (state, emitter) {
                 }
             });
         }
-        
+
         // set state uploads 
         await setStateUploads(state);
 
@@ -81,6 +81,8 @@ app.use(function (state, emitter) {
               console.log(err);
             } 
             
+            console.log(event.returnValues.ipfsHash);
+
             const uploader = event.returnValues.uploader;
             var ipfsHash = getIpfsHashFromBytes32(event.returnValues.ipfsHash);
             

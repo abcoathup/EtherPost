@@ -121,12 +121,13 @@ module.exports = function (state, emit) {
           <!-- Right Column -->
           <div class="w3-col m2">
             <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
-              <p>Peepeth</p>
-            </div>
-            <br>
-            
-            <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
-              <p>RMIT</p>
+              <h5>Suggested uploaders</h5>
+              
+              <div>
+                <div><a href="/uploader/abcoathup">abcoathup</a></div>
+                <div><a href="/uploader/FlexDapps">FlexDapps</a></div>
+                <div><a href="/uploader/RMITOnline">RMITOnline</a></div>
+              </div>
             </div>
             <br>
               
