@@ -32,6 +32,17 @@ module.exports = function (state, emit) {
       `
     }    
 
+    let navbarName
+
+    if (state.name != '') {
+      navbarName = html `  
+      <a href="/uploader/${state.name}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Uploads">
+        ${state.name}
+      </a>
+
+      `
+    }    
+
 
     return html `
     <div>
@@ -40,10 +51,7 @@ module.exports = function (state, emit) {
         <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
           <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
           <a href="/" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>EtherPost</a>
-      
-          <a href="/uploader/${state.name}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Uploads">
-            ${state.name}
-          </a>
+          ${navbarName}      
         </div>
       </div>
     
@@ -155,7 +163,9 @@ module.exports = function (state, emit) {
     function onSetName(e) {
         e.preventDefault()
         var name = document.getElementById('name').value;
-        emit('setName', name)
+        if (name != "") {
+          emit('setName', name)
+        }
     }
 
     function onClap(e) {
