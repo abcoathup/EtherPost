@@ -159,22 +159,26 @@ module.exports = function (state, emit) {
     function onClap(e) {
         e.preventDefault()
         var ipfsHash = e.target.parentNode.id;
-        if (ipfsHash == "") {       
+        if (!ipfsHash.startsWith("Qm")) {       
           ipfsHash = e.target.parentNode.parentNode.id;
         }
-        emit('clap', ipfsHash)
+        if (ipfsHash.startsWith("Qm")) {       
+          emit('clap', ipfsHash)
+        }        
     }
 
     function onComment(e) {
         e.preventDefault()
         var ipfsHash = e.target.name;
         var comment = e.target.comment.value;
-        var data = { ipfsHash: ipfsHash, comment: comment };
-        emit('comment', data)
+        if (comment != "") {
+          var data = { ipfsHash: ipfsHash, comment: comment };
+          emit('comment', data)
+        }
     }
 
     function upload(upload, i) {
-        return uploadTemplate(upload, onClap, onComment)
+        return uploadTemplate(upload, onClap, onComment, state.name)
     }
 
     function hide(e) {
