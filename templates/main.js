@@ -10,41 +10,35 @@ var uploadTemplate = require('./upload.js')
 module.exports = function (state, emit) {
     return html `
     <div>
-    <!-- Navbar -->
-    <div class="w3-top">
-     <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
-      <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>EtherPost</a>
+      <!-- Navbar -->
+      <div class="w3-top">
+        <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
+          <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+          <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>EtherPost</a>
       
-      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
-        ${state.name}
-      </a>
-     </div>
-    </div>
+          <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
+            ${state.name}
+          </a>
+        </div>
+      </div>
     
-    <!-- Navbar on small screens -->
-    <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">My Profile</a>
-    </div>
-    <script>
-    // Used to toggle the menu on smaller screens when clicking on the menu button
-function openNav() {
-    var x = document.getElementById("navDemo");
-    if (x.className.indexOf("w3-show") == -1) {
-      x.className += " w3-show";
-    } else { 
-      x.className = x.className.replace(" w3-show", "");
-    }
-  }
-  </script>
+      <!-- Navbar on small screens -->
+      <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
+        <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
+      </div>
+      <script>
+        // Used to toggle the menu on smaller screens when clicking on the menu button
+        function openNav() {
+          var x = document.getElementById("navDemo");
+          if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+          } else { 
+            x.className = x.className.replace(" w3-show", "");
+          }
+        }
+      </script>
   
-        <div>
-
-        
-
+      <div>
         <!-- Page Container -->
         <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">    
           <!-- The Grid -->
@@ -61,99 +55,84 @@ function openNav() {
               <p>Please upload more photos.</p>
             </div>
 
-
             <!-- Profile -->
-              <div class="w3-card w3-round w3-white">
-                <div class="w3-container">
-                 <h4 class="w3-center">${state.name}</h4>
-                 <p class="w3-center w3-tiny">${state.account}</p>
-                 <hr>
-                 <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
-                </div>
-                <div>${state.name}</div>
-                <form onsubmit="${onSetName}" method="post">
-                    <label for="name">Name:</label><br>
-                    <input type="text" id="name" name="name">
-                    <input type="submit" value="Set">
-                </form>
-                <br />
+            <div class="w3-card w3-round w3-white">
+              <div class="w3-container">
+                <h4 class="w3-center">${state.name}</h4>
+                <hr>
+                <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
               </div>
-              <br>
+              <form onsubmit="${onSetName}" method="post">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name">
+                <input type="submit" value="Set">
+              </form>
+              <br />
+            </div>
+            <br>
               
-
+          <!-- End Left Column -->
+          </div>
             
-            <!-- End Left Column -->
-            </div>
-            
-            <!-- Middle Column -->
-            <div class="w3-col m7">
-            
+          <!-- Middle Column -->
+          <div class="w3-col m7">
             <div class="w3-row-padding">
-            <div class="w3-col m12">
-              <div class="w3-card w3-round w3-white">
-                <div class="w3-container w3-padding">
-                  <h6 class="w3-opacity">Social Media template by w3.css</h6>
-                  <p contenteditable="true" class="w3-border w3-padding">Status: Feeling Blue</p>
-                  <button type="button" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button> 
-                  <form onsubmit="${onUpload}" method="post">
-                  <label for="picture">Upload:</label><br>
-                  <input type="file" id="picture" name="picture" accept="image/gif, image/jpeg, image/png">
-                  <input type="submit" value="Add">
-                </form>            
-    
-
+              <div class="w3-col m12">
+                <div class="w3-card w3-round w3-white">
+                  <div class="w3-container w3-padding">
+                    <h5 class="w3-opacity">Uploads are forever so be mindful of future you</h6>
+                    <form class="w3-container" onsubmit="${onUpload}" method="post">
+                      <div class="w3-row w3-section">
+                        <div class="w3-threequarter">
+                          <input class="w3-input" type="file" id="picture" name="picture" accept="image/gif, image/jpeg, image/png">
+                        </div>
+                        <div class="w3-rest">
+                          <input type="submit" class="w3-button w3-theme w3-right" value="Upload">
+                        </div>
+                      </div>
+                    </form>            
                   </div>
+                </div>
               </div>
             </div>
-          </div>
-    
-            
-            
             
             ${state.uploads.map(upload)}
 
-              
-            <!-- End Middle Column -->
-            </div>
-            
-            <!-- Right Column -->
-            <div class="w3-col m2">
-              <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
-                <p>Peepeth</p>
-              </div>
-              <br>
-
-              <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
-                <p>RMIT</p>
-              </div>
-              <br>
-
-              
-            <!-- End Right Column -->
-            </div>
-            
-          <!-- End Grid -->
+          <!-- End Middle Column -->
           </div>
+            
+          <!-- Right Column -->
+          <div class="w3-col m2">
+            <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
+              <p>Peepeth</p>
+            </div>
+            <br>
+            
+            <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
+              <p>RMIT</p>
+            </div>
+            <br>
+              
+          <!-- End Right Column -->
+          </div>
+            
+        <!-- End Grid -->
+        </div>
           
-        <!-- End Page Container -->
-        </div>
-        <br>
-        
-
-
-        </div>
-        <!-- Footer -->
-        <footer class="w3-container w3-theme-d3 w3-padding-16">
-          <h5>EtherPost</h5>
-        </footer>
-        
-        <footer class="w3-container w3-theme-d5">
-          <p>Powered by Caffinated Sugar Free Softdrink (TM)</p>
-        </footer>
+      <!-- End Page Container -->
+      </div>
+      <br>
     </div>
-    `
 
-    
+    <!-- Footer -->
+    <footer class="w3-container w3-theme-d3 w3-padding-16">
+      <h5>EtherPost 2019</h5>
+    </footer>
+    <footer class="w3-container w3-theme-d5">
+      <p>Powered by Embark, Choo and W3.CSS</p>
+    </footer>
+  </div>
+    `
 
     function onUpload(e) {
         e.preventDefault()

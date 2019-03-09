@@ -4,7 +4,7 @@ module.exports = function (comment) {
   
   // create html template
   return html`
-  <div>
+  <div class="w3-panel w3-pale-blue">
     ${comment}
   </div>
   `

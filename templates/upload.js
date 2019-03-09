@@ -12,19 +12,24 @@ module.exports = function (upload, clap, comment) {
   // create html template
   return html`
   <div id="${ipfsHash}" class="w3-container w3-card w3-white w3-round w3-margin">
-  <br>
-  <span class="w3-right w3-tiny w3-opacity">${ipfsHash}</span>
-  <hr class="w3-clear">
-  <img src="${ipfsUrl}" style="width:100%" class="w3-margin-bottom">
-  <button onclick="${clap}" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-hand-paper-o"></i>  Clap<span class="w3-badge w3-right w3-margin-left w3-blue">${clapCount}</span></button> 
-  <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment<span class="w3-badge w3-right w3-margin-left w3-blue">${commentCount}</span></button> 
-  
-  <form name="${ipfsHash}" onsubmit="${comment}" method="post">
-    <label for="comment">Comment:</label>
-    <input type="text" id="comment" name="comment">
-    <input type="submit" value="Comment">
-  </form>
-  ${upload.comments.map(commentTemplate)}
+    <br />
+    <span class="w3-right w3-tiny w3-opacity">${ipfsHash}</span>
+    <hr class="w3-clear">
+    <img src="${ipfsUrl}" style="width:100%" class="w3-margin-bottom">
+    <button onclick="${clap}" type="button" class="w3-button w3-right w3-theme-d1 w3-margin-bottom"><i class="fa fa-hand-paper-o"></i>  Clap<span class="w3-badge w3-right w3-margin-left w3-blue">${clapCount}</span></button> 
+    <form name="${ipfsHash}" onsubmit="${comment}" method="post">
+      <div class="w3-row w3-section">
+        <div class="w3-threequarter">
+          <input class="w3-input w3-border" type="text" id="comment" name="comment" placeholder="Comment something nice">
+        </div>
+        <div class="w3-rest">
+          <input class="w3-button w3-theme w3-right" type="submit" value="Comment">
+        </div>
+      </div>
+    </form>
+    <div class="w3-row w3-margin-bottom">
+      ${upload.comments.map(commentTemplate)}
+    </div>
   </div>  
   `
 }
