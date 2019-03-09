@@ -68,12 +68,11 @@ app.use(function (state, emitter) {
             });
         }
         
-        // set state uploads first to display
+        // set state uploads 
         await setStateUploads(state);
-        emitter.emit('render');
 
-        // set state claps and comments
-        await setStateClapsAndComments(state);
+        // set state upload data (uploader, claps and comments)
+        await setStateUploadData(state);
         emitter.emit('render');
 
         // Listen for LogUpload smart contract event and update dApp with upload
@@ -189,6 +188,7 @@ app.use(function (state, emitter) {
 
 // create a route
 app.route('/', main)
+app.route('/uploader/:uploader', main)
 
 // start app
 app.mount('div')
@@ -206,6 +206,14 @@ function getIpfsHashFromBytes32(bytes32Hex) {
   const hashBytes = Buffer.from(hex, 'hex');
   const str = bs58.encode(hashBytes)
   return str
+}
+
+function getUploaderData(state, ipfsHash) {
+    return new Promise(function (resolve, reject) {
+        state.etherPostContract.methods.getUploaderData(getBytes32FromIpfsHash(ipfsHash)).call().then(function (response) {
+            resolve(response);
+        });
+    });
 }
 
 // Return clap count from smart contract for given upload ipfsHash
@@ -235,6 +243,14 @@ function getUploadsForUser(state, user) {
     });
 }
 
+function getAllUploads(state) {
+    return new Promise(function (resolve, reject) {
+        state.etherPostContract.methods.getAllUploads().call().then(function (response) {
+            resolve(response);
+        });
+    });
+}
+
 function getName(state) {
     return new Promise(function (resolve, reject) {
         state.etherPostContract.methods.getName(state.account).call().then(function (response) {
@@ -244,16 +260,17 @@ function getName(state) {
 }
 
 async function setStateUploads(state) {
-    var uploads = await getUploadsForUser(state, state.account);
+    var uploads = await getAllUploads(state);
     
     uploads.forEach(function(item, index) {
         var ipfsHash = getIpfsHashFromBytes32(item);
-        
-        var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
+
+        var upload = { ipfsHash: ipfsHash, uploaderAddress: null, uploaderName: "", clapCount: 0, comments: [] };
         state.uploads.push(upload);            
     });    
 }
 
+// Only store uploads initially, second pass will get claps and comments
 async function setStateUpload(state, ipfsHash) {
     var exists = false;
     for(var index = 0; index < state.uploads.length; index++) {
@@ -263,7 +280,8 @@ async function setStateUpload(state, ipfsHash) {
     }
 
     if(!exists) {
-        var upload = { ipfsHash: ipfsHash, clapCount: 0, comments: [] };
+        var uploader = await getUploaderData(state, ipfsHash);
+        var upload = { ipfsHash: ipfsHash, uploaderAddress: uploader.uploader, uploaderName: uploader.name, clapCount: 0, comments: [] };
         state.uploads.push(upload);
     }
 }
@@ -296,8 +314,9 @@ async function setStateComments(state, imageHash) {
     }
 }
 
-async function setStateClapsAndComments(state) {
+async function setStateUploadData(state) {
     for(var index = 0; index < state.uploads.length; index++) {
+        var uploader = await getUploaderData(state, state.uploads[index].ipfsHash);
         var clapCount = await getClapCount(state, state.uploads[index].ipfsHash);
         var commentsIpfsHashes = await getComments(state, state.uploads[index].ipfsHash)
         var comments = [];
@@ -310,6 +329,8 @@ async function setStateClapsAndComments(state) {
             comments.push(comment)
         }
 
+        state.uploads[index].uploaderAddress = uploader.uploader;
+        state.uploads[index].uploaderName = uploader.name;
         state.uploads[index].clapCount = clapCount;
         state.uploads[index].comments = comments;
     }

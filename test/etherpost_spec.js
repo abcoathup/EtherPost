@@ -12,6 +12,7 @@ const testHash4 = 'QmbVkMHyKXehsAG6Mq8zj1ULZi3vYQf3YWprh5kwdTRZXc';
 const testHash5 = 'QmcDdvUupWv4gPmHYoibEegFtVJTA5gXYpEcDmgeJQHZLB';
 const testHashes = [testHash1, testHash2, testHash3, testHash4, testHash5];
 const name = 'name';
+const name2 = 'name2';
 
 // For documentation please see https://embark.status.im/docs/contracts_testing.html
 config({
@@ -49,6 +50,8 @@ contract("EtherPost", function () {
     });
 
     it('should be able to upload and receive upload event', async () => {
+      await etherPostInstance.methods.register(name).send();
+      
       const txResult = await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
       const event = txResult.events.LogUpload;
       const uploader = event.returnValues.uploader;
@@ -66,9 +69,15 @@ contract("EtherPost", function () {
 
       let uploaderAddress = await etherPostInstance.methods.getUploader(getBytes32FromIpfsHash(testHash1)).call();
       assert.equal(uploaderAddress, accounts[0]);
+
+      let uploaderData = await etherPostInstance.methods.getUploaderData(getBytes32FromIpfsHash(testHash1)).call();
+      assert.equal(uploaderData.name, name);
+      assert.equal(uploaderData.uploader, accounts[0]);
     });
 
     it('should be able to make multiple uploads', async () => {
+      await etherPostInstance.methods.register(name).send();
+
       let uploadCount = 5;
       for (var upload = 0; upload < uploadCount; upload++) {
         await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHashes[upload])).send();
@@ -85,10 +94,14 @@ contract("EtherPost", function () {
     });
 
     it('should be able to make multiple uploads from multiple accounts', async () => {
+      await etherPostInstance.methods.register(name).send({from: accounts[0]});
+
       // Two uploads for account 0
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]});
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash2)).send({from: accounts[0]});
-        
+      
+      await etherPostInstance.methods.register(name2).send({from: accounts[1]});
+
       // Three uploads for account 1
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash3)).send({from: accounts[1]});
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash4)).send({from: accounts[1]});
@@ -109,7 +122,30 @@ contract("EtherPost", function () {
       assert.equal(allUploads.length, 5);
     });
 
+    it('should be able to get uploader data', async () => {
+      await etherPostInstance.methods.register(name).send();
+      
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
+                  
+      let uploaderData = await etherPostInstance.methods.getUploaderData(getBytes32FromIpfsHash(testHash1)).call();
+      assert.equal(uploaderData.name, name);
+      assert.equal(uploaderData.uploader, accounts[0]);
+    });
+
+    it('should not to be able to upload until registered', async () => {
+      await shouldFail.reverting(etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send());
+      let uploads = await etherPostInstance.methods.getUploads(accounts[0]).call();
+      assert.equal(uploads.length, 0);
+
+      await etherPostInstance.methods.register(name).send();
+      
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
+      uploads = await etherPostInstance.methods.getUploads(accounts[0]).call();
+      assert.equal(uploads.length, 1);
+    });
+
     it('should not be able to upload the same hash', async () => {
+      await etherPostInstance.methods.register(name).send();
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]});
       await shouldFail.reverting(etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]}));
     });
@@ -117,26 +153,31 @@ contract("EtherPost", function () {
     it('should not be able to get an uploader for a non existant upload', async () => {
       await shouldFail.reverting(etherPostInstance.methods.getUploader(getBytes32FromIpfsHash(testHash1)).call());
     });
- 
+
+    it('should not be able to get uploader data for a non existant upload', async () => {
+      await shouldFail.reverting(etherPostInstance.methods.getUploaderData(getBytes32FromIpfsHash(testHash1)).call());
+    });
   });
 
   context('Comments', async function () {
 
     it('new upload should have zero comments', async () => {
+      await etherPostInstance.methods.register(name).send();
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
       let comments = await etherPostInstance.methods.getComments(getBytes32FromIpfsHash(testHash1)).call();
       assert.equal(comments.length, 0);
     });
 
     it('should not to be able to comment until registered', async () => {
-      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
-      await shouldFail.reverting(etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send());
+      await etherPostInstance.methods.register(name).send({from: accounts[0]});
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]});
+      await shouldFail.reverting(etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send({from: accounts[1]}));
       let comments = await etherPostInstance.methods.getComments(getBytes32FromIpfsHash(testHash1)).call()
       assert.equal(comments.length, 0);
       
-      await etherPostInstance.methods.register(name).send();
+      await etherPostInstance.methods.register(name).send({from: accounts[1]});
       
-      await etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send();
+      await etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send({from: accounts[1]});
       comments = await etherPostInstance.methods.getComments(getBytes32FromIpfsHash(testHash1)).call()
       assert.equal(comments.length, 1); 
     });
@@ -147,9 +188,8 @@ contract("EtherPost", function () {
     });
 
     it('should be able to comment and receive comment event', async () => {
-      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
-      
       await etherPostInstance.methods.register(name).send();
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
 
       const txResult = await etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send();
       const block = await web3.eth.getBlock(txResult.blockNumber);
@@ -170,10 +210,9 @@ contract("EtherPost", function () {
     });
 
     it('should be able to make multiple comments', async () => {
+      await etherPostInstance.methods.register(name).send();
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
       
-      await etherPostInstance.methods.register(name).send();
-
       let commentCount = 10;
       for (var comment = 0; comment < commentCount; comment++) {
         await etherPostInstance.methods.comment(getBytes32FromIpfsHash(testHash1), getBytes32FromIpfsHash(testHash2)).send();
@@ -190,6 +229,7 @@ contract("EtherPost", function () {
   context('Claps', async function () {
 
     it('new upload should have zero claps', async () => {
+      await etherPostInstance.methods.register(name).send();
       await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
       let claps = await etherPostInstance.methods.getClapCount(getBytes32FromIpfsHash(testHash1)).call();
       assert.equal(claps, 0);
@@ -202,14 +242,15 @@ contract("EtherPost", function () {
     });
 
     it('should not to be able to clap until registered', async () => {
-      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
-      await shouldFail.reverting(etherPostInstance.methods.clap(getBytes32FromIpfsHash(testHash1)).send());
+      await etherPostInstance.methods.register(name).send({from: accounts[0]});
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send({from: accounts[0]});
+      await shouldFail.reverting(etherPostInstance.methods.clap(getBytes32FromIpfsHash(testHash1)).send({from: accounts[1]}));
       let claps = await etherPostInstance.methods.getClapCount(getBytes32FromIpfsHash(testHash1)).call()
       assert.equal(claps, 0);
 
-      await etherPostInstance.methods.register(name).send();
+      await etherPostInstance.methods.register(name).send({from: accounts[1]});
       
-      await etherPostInstance.methods.clap(getBytes32FromIpfsHash(testHash1)).send();
+      await etherPostInstance.methods.clap(getBytes32FromIpfsHash(testHash1)).send({from: accounts[1]});
       claps = await etherPostInstance.methods.getClapCount(getBytes32FromIpfsHash(testHash1)).call()
       assert.equal(claps, 1); 
     });
@@ -219,9 +260,8 @@ contract("EtherPost", function () {
     });
 
     it('should be able to clap and receive clap event', async () => {
-      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
-
       await etherPostInstance.methods.register(name).send();
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
 
       let claps = await etherPostInstance.methods.getClapCount(getBytes32FromIpfsHash(testHash1)).call();
       assert.equal(claps, 0);
@@ -238,9 +278,8 @@ contract("EtherPost", function () {
     });
 
     it('should be able to make multiple claps', async () => {
-      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
-      
       await etherPostInstance.methods.register(name).send();
+      await etherPostInstance.methods.upload(getBytes32FromIpfsHash(testHash1)).send();
 
       let clapCount = 10;
       for (var clap = 0; clap < clapCount; clap++) {

@@ -42,9 +42,10 @@ contract EtherPost is EtherPostInterface, Identity {
   /**
    * @dev Upload, must not have been uploaded by anyone
    * (implementation of EtherPostInterface)
+   * Uploader must be registered
    * @param ipfsHash upload (IPFS Hash encoded to bytes32)
    */
-  function upload(bytes32 ipfsHash) public uploadNotExists(ipfsHash) {
+  function upload(bytes32 ipfsHash) public uploadNotExists(ipfsHash) registered(msg.sender) {
     uploaders[ipfsHash] = msg.sender;
     uploads[msg.sender].push(ipfsHash);
     allUploads.push(ipfsHash);
@@ -115,6 +116,16 @@ contract EtherPost is EtherPostInterface, Identity {
    */
   function getUploader(bytes32 ipfsHash) public view uploadExists(ipfsHash) returns(address) {
     return uploaders[ipfsHash];
+  }
+
+  /**
+   * @dev Get uploader for upload
+   * @param ipfsHash upload (IPFS Hash encoded to bytes32)
+   * @return uploader name and address
+   */
+  function getUploaderData(bytes32 ipfsHash) public view uploadExists(ipfsHash) returns(string memory name, address uploader) {
+    uploader = getUploader(ipfsHash);
+    return (getName(uploader), uploader);
   }
 
   /**

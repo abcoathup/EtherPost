@@ -39,9 +39,9 @@ module.exports = function (state, emit) {
       <div class="w3-top">
         <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
           <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
-          <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>EtherPost</a>
+          <a href="/" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>EtherPost</a>
       
-          <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
+          <a href="/uploader/${state.name}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Uploads">
             ${state.name}
           </a>
         </div>
@@ -75,12 +75,11 @@ module.exports = function (state, emit) {
             <div class="w3-card w3-round w3-white">
               <div class="w3-container">
                 <h4 class="w3-center">${state.name}</h4>
-                <p class="w3-center"><img src="${blockies.createDataURL({ seed: 'state.account' })}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+                <p class="w3-center"><img src="${blockies.createDataURL({ seed: state.account })}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
               </div>
               ${registerName}              
             </div>
             <br>
-
           <!-- End Left Column -->
           </div>
             
@@ -97,7 +96,7 @@ module.exports = function (state, emit) {
                           <input class="w3-input" type="file" id="picture" name="picture" accept="image/gif, image/jpeg, image/png">
                         </div>
                         <div class="w3-rest">
-                          <input type="submit" class="w3-button w3-theme w3-right" value="Upload">
+                          <input type="submit" class="w3-button w3-theme w3-right ${(state.name == '') ? 'w3-disabled' : ''}" value="Upload">
                         </div>
                       </div>
                     </form>            
@@ -146,8 +145,11 @@ module.exports = function (state, emit) {
 
     function onUpload(e) {
         e.preventDefault()
-        var picture = document.getElementById('picture').files[0];
-        emit('upload', picture)
+        // Only registered can upload
+        if (state.name != "") {
+          var picture = document.getElementById('picture').files[0];
+          emit('upload', picture)
+        }
     }
 
     function onSetName(e) {
@@ -162,8 +164,11 @@ module.exports = function (state, emit) {
         if (!ipfsHash.startsWith("Qm")) {       
           ipfsHash = e.target.parentNode.parentNode.id;
         }
-        if (ipfsHash.startsWith("Qm")) {       
-          emit('clap', ipfsHash)
+        if (ipfsHash.startsWith("Qm")) {      
+          // Only registered can clap
+          if (state.name != "") {
+            emit('clap', ipfsHash)
+          }
         }        
     }
 
@@ -171,14 +176,24 @@ module.exports = function (state, emit) {
         e.preventDefault()
         var ipfsHash = e.target.name;
         var comment = e.target.comment.value;
+        //Ignore blank comments
         if (comment != "") {
           var data = { ipfsHash: ipfsHash, comment: comment };
-          emit('comment', data)
+          // Only registered can comment
+          if (state.name != "") {
+            emit('comment', data)
+          }
         }
     }
 
     function upload(upload, i) {
+      //Filter displayed uploads based on uploader
+      var uploaderFilter = state.params.uploader
+      if (uploaderFilter && uploaderFilter !== upload.uploaderName) {
+        return // nothing
+      } else {
         return uploadTemplate(upload, onClap, onComment, state.name)
+      }
     }
 
     function hide(e) {
