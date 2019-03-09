@@ -10,12 +10,23 @@ contract Identity {
   /** @dev address to name mapping */
   mapping (address => string) private names;
 
+  /** @dev Modifier checks address is registered. */
+  modifier registered(address user) {
+    require(bytes(names[msg.sender]).length != 0, "Address not registered");
+    _;
+  }
+
+  /** @dev Modifier checks address is not registered. */
+  modifier notRegistered(address user) {
+    require(bytes(names[msg.sender]).length == 0, "Address already registered");
+    _;
+  }
+
   /**
    * @dev Register name (must not have already registered)
    * @param name to register for calling address
    */
-  function register(string memory name) public {
-    require(bytes(names[msg.sender]).length == 0, "Address already registered name");
+  function register(string memory name) public notRegistered(msg.sender) {
     names[msg.sender] = name;
   }
 

@@ -1,6 +1,8 @@
 pragma solidity 0.4.24;
 
 import "./EtherPostInterface.sol";
+import "./Identity.sol";
+
 
 /**
  * @title EtherPost
@@ -8,7 +10,7 @@ import "./EtherPostInterface.sol";
  * @dev EtherPost is a contract for storing image uploads, comments and claps.
  * IPFS hashes are encoded to bytes32 with Qm removed.
  */
-contract EtherPost is EtherPostInterface {
+contract EtherPost is EtherPostInterface, Identity {
 
   /** @dev Uploader to array of uploads (IPFS Hashes encoded to bytes32) mapping */
   mapping(address => bytes32[]) private uploads;
@@ -53,9 +55,10 @@ contract EtherPost is EtherPostInterface {
   /**
    * @dev Clap an Upload, upload must exist
    * (implementation of EtherPostInterface)
+   * Clapper must be registered
    * @param ipfsHash upload (IPFS Hash encoded to bytes32)
    */
-  function clap(bytes32 ipfsHash) public uploadExists(ipfsHash) {
+  function clap(bytes32 ipfsHash) public uploadExists(ipfsHash) registered(msg.sender) {
     claps[ipfsHash]++;
 
     emit LogClap(msg.sender, ipfsHash);
@@ -64,10 +67,11 @@ contract EtherPost is EtherPostInterface {
   /**
    * @dev Comment on an Upload, upload must exist
    * (implementation of EtherPostInterface)
+   * Commenter must be registered
    * @param imageHash upload (IPFS Hash encoded to bytes32)
    * @param commentHash comment (IPFS Hash encoded to bytes32)
    */
-  function comment(bytes32 imageHash, bytes32 commentHash) public uploadExists(imageHash) {
+  function comment(bytes32 imageHash, bytes32 commentHash) public uploadExists(imageHash) registered(msg.sender) {
     uint timestamp = block.timestamp;
     comments[imageHash].push(commentHash);
 

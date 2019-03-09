@@ -2,7 +2,6 @@ var choo = require('choo')
 var main = require('./templates/main');
 var Web3 = require('web3')
 var etherPostABI = require("./dist/contracts/EtherPost.json").abiDefinition
-var identityABI = require("./dist/contracts/Identity.json").abiDefinition
 var buffer = require('buffer')
 var bs58 = require('bs58')
 var IPFS = require('ipfs-http-client')
@@ -49,7 +48,6 @@ app.use(function (state, emitter) {
         // Set up contract interface
         state.etherPostContract = new window.web3.eth.Contract(etherPostABI, "0x04D45b51fe4f00b4478F8b0719Fa779f14c8A194")
         state.etherPostContract.options.gas = 5000000; 
-        state.identityContract = new window.web3.eth.Contract(identityABI, "0x10Aa1c9C2ad79b240Dc612cd2c0c0f5513bAfF28")
 
         var accounts = await window.web3.eth.getAccounts()
         window.web3.eth.defaultAccount = accounts[0]
@@ -157,7 +155,7 @@ app.use(function (state, emitter) {
     })
 
     emitter.on('setName', function (name) {
-        state.identityContract.methods.register(name).send({ from: state.account })
+        state.etherPostContract.methods.register(name).send({ from: state.account })
             .on('error', console.error)
             .on('receipt', async receipt => {
                 console.log("Registered name to smart contract: ", name);
@@ -239,7 +237,7 @@ function getUploadsForUser(state, user) {
 
 function getName(state) {
     return new Promise(function (resolve, reject) {
-        state.identityContract.methods.getName(state.account).call().then(function (response) {
+        state.etherPostContract.methods.getName(state.account).call().then(function (response) {
             resolve(response);
         });
     });

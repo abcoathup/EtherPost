@@ -13,13 +13,18 @@ module.exports = function (state, emit) {
 
     if (state.name == '') {
       registerName = html `  
+      <div class="w3-container">
+        <h6>
+          Register to clap & comment.
+        </h6>
+      </div>
       <form class="w3-container" onsubmit="${onSetName}" method="post">
         <div>
           <div>
             <input class="w3-input w3-border" type="text" id="name" name="name" placeholder="Register a name">
           </div>
           <div>
-            <input class="w3-theme w3-right" type="submit" value="Set">
+            <input class="w3-theme w3-right" type="submit" value="Register">
           </div>
         </div>
       </form>
