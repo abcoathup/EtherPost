@@ -36,8 +36,9 @@ module.exports = function (state, emit) {
 
     if (state.name != '') {
       navbarName = html `  
+      
       <a href="/uploader/${state.name}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Uploads">
-        ${state.name}
+        <img src="${blockies.createDataURL({ seed: state.account })}" class="w3-circle" style="height:23px;width:23px" alt="Avatar">
       </a>
 
       `
@@ -57,7 +58,7 @@ module.exports = function (state, emit) {
     
       <!-- Navbar on small screens -->
       <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
-        <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
+        <a href="/" class="w3-bar-item w3-button w3-padding-large">Home</a>
       </div>
       <script>
         // Used to toggle the menu on smaller screens when clicking on the menu button
@@ -88,6 +89,27 @@ module.exports = function (state, emit) {
               ${registerName}              
             </div>
             <br>
+
+          <div class="w3-card w3-round w3-white w3-padding">
+            <div class="w3-container">
+              <h6>
+                View uploader
+              </h6>
+            </div>
+            <form class="w3-container w3-padding" onsubmit="${onViewUploader}" method="post">
+              <div>
+                <div>
+                  <input class="w3-input w3-border" type="text" id="uploader" name="uploader" placeholder="Uploader to view">
+                </div>
+                <div>
+                  <input class="w3-theme w3-right" type="submit" value="View">
+                </div>
+              </div>
+
+            </form>
+          </div>
+          <br />  
+                      
           <!-- End Left Column -->
           </div>
             
@@ -167,6 +189,14 @@ module.exports = function (state, emit) {
         if (name != "") {
           emit('setName', name)
         }
+    }
+
+    function onViewUploader(e) {
+      e.preventDefault()
+      var uploader = document.getElementById('uploader').value;
+      if (uploader != "") {
+        emit('pushState', '/uploader/' + uploader)
+      }
     }
 
     function onClap(e) {
