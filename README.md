@@ -5,6 +5,9 @@
 Final Project for RMIT Online Developing Blockchain Applications 8 week course 
 (developed by Flex Dapps)
 
+Users need to register a name before they can upload, clap or comment.
+
+
 ## Test
 Test smart contracts
 ```
