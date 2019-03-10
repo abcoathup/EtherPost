@@ -147,8 +147,7 @@ module.exports = function (state, emit) {
               
               <div>
                 <div><a href="/uploader/abcoathup">abcoathup</a></div>
-                <div><a href="/uploader/FlexDapps">FlexDapps</a></div>
-                <div><a href="/uploader/RMITOnline">RMITOnline</a></div>
+                <div><a href="/uploader/flexdapps">flexdapps</a></div>
               </div>
             </div>
             <br>

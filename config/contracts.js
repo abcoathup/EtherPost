@@ -50,11 +50,22 @@ module.exports = {
     contracts: {
       EtherPost : {
         args: []
-        //,
-        //onDeploy: [
-        //  "EtherPost.methods.register('abcoathup').send()",
-        //  "EtherPost.methods.upload('0x15fe8589f1682a824b01fa5ec74ae924d80b1268180265f22cef6fe91cbe14f1').send({gasLimit:1500000})"
-        //]
+        ,
+        onDeploy: [
+         "EtherPost.methods.register('abcoathup').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f'})",
+         "EtherPost.methods.register('flexdapps').send({from: '0xfbaf82a227dcebd2f9334496658801f63299ba24'})",
+         "EtherPost.methods.upload('0xad9766f01697840a5b1dd2c9123bc9c5bd0b69f5fccd78cd2ca55a59e46193b8').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.upload('0xf0d980a7c254f81bc1eaadedf0cb24aa5474b6319b1eb0327caa98257c55bce9').send({from: '0xfbaf82a227dcebd2f9334496658801f63299ba24', gasLimit:1500000})",
+         "EtherPost.methods.upload('0x7c39737b03f7e04f8211e0a930602fc3bb415cd2824929dfad17823d7bdabd0d').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.upload('0x18a5b1a24bfb8e58ee1fbfd1fefc4d9b99ffd121294b8cf3617ccf9fe1ca170d').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.upload('0xcd4bfba457708ca1cd075c86bb094fae0c413c81165b1bd6c1f62d9ad02c2eba').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.upload('0x1063db4d181daa1fa3e2e37a5d0ad36ad82bba86920699a222f010fb81409c00').send({from: '0xfbaf82a227dcebd2f9334496658801f63299ba24', gasLimit:1500000})",
+         "EtherPost.methods.clap('0xad9766f01697840a5b1dd2c9123bc9c5bd0b69f5fccd78cd2ca55a59e46193b8').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.clap('0xad9766f01697840a5b1dd2c9123bc9c5bd0b69f5fccd78cd2ca55a59e46193b8').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.clap('0xad9766f01697840a5b1dd2c9123bc9c5bd0b69f5fccd78cd2ca55a59e46193b8').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+         "EtherPost.methods.clap('0xf0d980a7c254f81bc1eaadedf0cb24aa5474b6319b1eb0327caa98257c55bce9').send({from: '0xfbaf82a227dcebd2f9334496658801f63299ba24', gasLimit:1500000})",
+         "EtherPost.methods.clap('0x7c39737b03f7e04f8211e0a930602fc3bb415cd2824929dfad17823d7bdabd0d').send({from: '0xf09324e7a1e2821c2f7a4a47675f9cf0b1a5eb7f', gasLimit:1500000})",
+        ]
       }
     }
     
